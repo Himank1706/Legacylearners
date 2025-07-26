@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legacy Learners - Bridging Generations</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link to your custom CSS file -->
+    <link rel="stylesheet" href="mentor.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-gray-800">
+                Legacy<span class="text-indigo-600">Learners</span>
+            </a>
+            <div id="main-nav-links" class="hidden md:flex items-center space-x-6">
+                <a href="#mission" class="text-gray-600 hover:text-indigo-600 transition duration-300">Our Mission</a>
+                <a href="#mentors" class="text-gray-600 hover:text-indigo-600 transition duration-300">Find a Mentor</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-indigo-600 transition duration-300">How It Works</a>
+            </div>
+            <div id="auth-links" class="hidden md:flex items-center space-x-4">
+                 <a href="#" id="login-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Log In</a>
+                 <a href="#" id="signup-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Sign Up</a>
+            </div>
+            <div id="user-info" class="hidden items-center space-x-4">
+                <span id="welcome-message" class="text-gray-700 font-semibold"></span>
+                <a href="#" id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">Log Out</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-indigo-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <div id="mobile-main-nav">
+                <a href="#mission" class="block py-2 text-gray-600 hover:text-indigo-600">Our Mission</a>
+                <a href="#mentors" class="block py-2 text-gray-600 hover:text-indigo-600">Find a Mentor</a>
+                <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-indigo-600">How It Works</a>
+            </div>
+            <div id="mobile-auth-links" class="mt-4">
+                <a href="#" id="mobile-login-btn" class="block text-center w-full py-2 mb-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Log In</a>
+                <a href="#" id="mobile-signup-btn" class="block text-center w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Sign Up</a>
+            </div>
+             <div id="mobile-user-info" class="hidden mt-4">
+                <span id="mobile-welcome-message" class="block text-center py-2 text-gray-700 font-semibold"></span>
+                <a href="#" id="mobile-logout-btn" class="block text-center w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Log Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content for guests -->
+    <main id="guest-content">
+        <!-- Hero Section -->
+        <section class="hero-bg py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-4 animate-fade-in-up">Experience Meets Ambition.</h1>
+                <p class="text-lg md:text-xl text-indigo-200 max-w-3xl mx-auto mb-8 animate-fade-in-up animate-delay-300">A place where retired professionals share a lifetime of knowledge with the next generation of leaders, creators, and innovators.</p>
+                <a href="#mentors" class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300 text-lg animate-fade-in-up animate-delay-600">Explore Mentors</a>
+            </div>
+        </section>
+
+        <!-- Mission Section -->
+        <section id="mission" class="py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl font-bold mb-2">Our Mission</h2>
+                <p class="text-indigo-600 font-semibold mb-8">Bridging the Generation Gap & Empowering Seniors</p>
+                <p class="max-w-4xl mx-auto text-gray-600">We believe that wisdom is timeless. Our mission is to create a vibrant community where retirees can continue to make a meaningful impact by mentoring young people. It's about more than just sharing skills; it's about connecting generations, fostering mutual respect, and ensuring valuable life lessons are passed on.</p>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="bg-white py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">Get Started in 3 Easy Steps</h2>
+                <div class="grid md:grid-cols-3 gap-12 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="bg-indigo-100 text-indigo-600 rounded-full w-20 h-20 flex items-center justify-center text-3xl font-bold mb-4">1</div>
+                        <h3 class="text-xl font-semibold mb-2">Create Your Profile</h3>
+                        <p class="text-gray-600">Whether you're a mentor or a learner, sign up and tell us about your skills, interests, and what you're looking for.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-indigo-100 text-indigo-600 rounded-full w-20 h-20 flex items-center justify-center text-3xl font-bold mb-4">2</div>
+                        <h3 class="text-xl font-semibold mb-2">Find Your Match</h3>
+                        <p class="text-gray-600">Browse our community of experienced professionals. Search by industry, skill, or interest to find the perfect mentor for you.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-indigo-100 text-indigo-600 rounded-full w-20 h-20 flex items-center justify-center text-3xl font-bold mb-4">3</div>
+                        <h3 class="text-xl font-semibold mb-2">Start Learning</h3>
+                        <p class="text-gray-600">Connect with your mentor through our secure platform. Schedule sessions, share ideas, and start your journey of growth.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Mentors Section -->
+        <section id="mentors" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">Meet Some of Our Mentors</h2>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Mentor Card 1 -->
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Ramesh_Mashelkar_Apr09.jpg" alt="Portrait of Dr. R. A. Mashelkar" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-1">Dr. R. A. Mashelkar</h3>
+                            <p class="text-indigo-600 font-semibold mb-2">Science & Innovation</p>
+                            <p class="text-gray-600 text-sm">Known for mentoring young innovators, startups, and promoting inclusive innovation.</p>
+                        </div>
+                    </div>
+                    <!-- Mentor Card 2 -->
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.apnic.net/wp-content/uploads/2015/08/kiran-karnik.jpg" alt="Portrait of Kiran Karnik" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-1">Kiran Karnik</h3>
+                            <p class="text-indigo-600 font-semibold mb-2">IT & Policy</p>
+                            <p class="text-gray-600 text-sm">Active in mentoring young IT professionals and startups through various forums.</p>
+                        </div>
+                    </div>
+                    <!-- Mentor Card 3 -->
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2018/02/01/Photos/Processed/RaviVenkatesan-kI3F--621x414@LiveMint.jpg" alt="Portrait of Ravi Venkatesan" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-1">Ravi Venkatesan</h3>
+                            <p class="text-indigo-600 font-semibold mb-2">Business Strategy</p>
+                            <p class="text-gray-600 text-sm">Mentors social entrepreneurs via Social Venture Partners and Global Alliance for Mass Entrepreneurship (GAME).</p>
+                        </div>
+                    </div>
+                    <!-- Mentor Card 4 -->
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Devi_Shetty.jpg/800px-Devi_Shetty.jpg" alt="Portrait of Dr. Devi Shetty" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-1">Dr. Devi Shetty</h3>
+                            <p class="text-indigo-600 font-semibold mb-2">Healthcare & Entrepreneurship</p>
+                            <p class="text-gray-600 text-sm">Founder of Narayana Health and strong promoter of low-cost healthcare innovation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA Section -->
+        <section id="cta-section" class="bg-indigo-600">
+            <div class="container mx-auto px-6 py-20 text-center">
+                <h2 class="text-3xl font-bold text-white mb-4">Ready to Share or Eager to Learn?</h2>
+                <p class="text-indigo-200 max-w-2xl mx-auto mb-8">Join our community today and become part of a movement that values wisdom, experience, and connection.</p>
+                <a href="#" id="join-now-btn" class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300 text-lg">Join for Free</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- User Dashboard -->
+    <main id="dashboard-content" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <h1 id="dashboard-welcome" class="text-4xl font-bold mb-8"></h1>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dashboard Card 1: My Profile -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">My Profile</h2>
+                    <p class="text-gray-600">View and edit your personal information and mentorship preferences.</p>
+                    <button id="go-to-profile-btn" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Go to Profile</button>
+                </div>
+                <!-- Dashboard Card 2: Find Mentors -->
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">Find a Mentor</h2>
+                    <p class="text-gray-600">Search our network of experienced professionals to find your perfect match.</p>
+                    <button id="find-mentor-btn" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Browse Mentors</button>
+                </div>
+                <!-- Dashboard Card 3: My Sessions -->
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">My Sessions</h2>
+                    <p class="text-gray-600">Check your upcoming scheduled sessions and review past meetings.</p>
+                    <button id="view-sessions-btn" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">View Sessions</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Profile Page -->
+    <main id="profile-content" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
+            <h1 class="text-4xl font-bold mb-4">My Profile</h1>
+            
+            <!-- Profile Completion Bar -->
+            <div class="mb-8">
+                <div class="flex justify-between mb-1">
+                    <span class="text-base font-medium text-indigo-700">Profile Completion</span>
+                    <span id="profile-completion-text" class="text-sm font-medium text-indigo-700">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="profile-completion-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <form id="profile-form" class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto space-y-8">
+                <!-- Section 1: The Essentials -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-bold mb-4">The Essentials</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="profile-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="profile-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label for="profile-headline" class="block text-sm font-medium text-gray-700 mb-1">Headline <span class="text-red-500">*</span></label>
+                            <input type="text" id="profile-headline" placeholder="e.g., Computer Science Student" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label for="profile-location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                            <input type="text" id="profile-location" placeholder="e.g., Faridabad, India" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: My Goals & Aspirations -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-bold mb-4">My Goals & Aspirations</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="profile-focus" class="block text-sm font-medium text-gray-700 mb-1">My Current Focus <span class="text-red-500">*</span></label>
+                            <select id="profile-focus" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                                <option value="">Select...</option>
+                                <option>In High School</option>
+                                <option>Studying at University</option>
+                                <option>Recent Graduate</option>
+                                <option>Early Career Professional</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="profile-interests" class="block text-sm font-medium text-gray-700 mb-1">Fields of Interest <span class="text-red-500">*</span></label>
+                            <input type="text" id="profile-interests" placeholder="e.g., Technology, Healthcare, Arts" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">I'm Looking for Guidance On:</label>
+                            <div id="profile-guidance-checklist" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <!-- Checklist items will be populated by JS -->
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="profile-goals" class="block text-sm font-medium text-gray-700 mb-1">My Goals (1-3 years)</label>
+                            <textarea id="profile-goals" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: My Background & Skills -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-bold mb-4">My Background & Skills</h2>
+                    <div>
+                        <label for="profile-education" class="block text-sm font-medium text-gray-700 mb-1">Education</label>
+                        <input type="text" id="profile-education" placeholder="B.Tech in Computer Science, YMCA, 2026" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div class="mt-6">
+                        <label for="profile-skills" class="block text-sm font-medium text-gray-700 mb-1">My Skills & Strengths</label>
+                        <input type="text" id="profile-skills" placeholder="Python, Canva, Content Writing, Teamwork" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+
+                <!-- Section 4: A Personal Touch -->
+                <div>
+                    <h2 class="text-2xl font-bold mb-4">A Personal Touch</h2>
+                    <div>
+                        <label for="profile-expectations" class="block text-sm font-medium text-gray-700 mb-1">What I Hope to Learn from a Mentor</label>
+                        <textarea id="profile-expectations" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition duration-300 font-bold">Save Changes</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Find a Mentor Page -->
+    <main id="find-mentor-page-content" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Filters Sidebar -->
+                <aside class="w-full md:w-1/4">
+                    <div class="bg-white p-6 rounded-lg shadow-md sticky top-28">
+                        <h3 class="text-xl font-bold mb-4">Filters</h3>
+                        <form id="filter-form" class="space-y-6">
+                            <div>
+                                <label for="keyword-search" class="block text-sm font-medium text-gray-700">Keyword Search</label>
+                                <input type="text" id="keyword-search" placeholder="e.g., Java, Leadership" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <h4 class="block text-sm font-medium text-gray-700 mb-2">Industry</h4>
+                                <div id="industry-filters" class="space-y-2">
+                                    <!-- Industry checkboxes populated by JS -->
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="block text-sm font-medium text-gray-700 mb-2">Expertise</h4>
+                                <div id="expertise-filters" class="space-y-2">
+                                    <!-- Expertise checkboxes populated by JS -->
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </aside>
+                <!-- Mentor Results -->
+                <div class="w-full md:w-3/4">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="mentor-results-count" class="text-2xl font-bold">Mentors</h2>
+                        <div>
+                            <label for="sort-mentors" class="sr-only">Sort by</label>
+                            <select id="sort-mentors" class="rounded-lg border-gray-300">
+                                <option value="relevance">Sort by: Relevance</option>
+                                <option value="newly-joined">Newly Joined</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="find-mentor-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <!-- Mentor cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mentor Profile Page -->
+    <main id="mentor-profile-content" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <button class="back-to-find-mentor-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Search</button>
+            <div id="mentor-profile-details" class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                <!-- Mentor details will be populated here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- My Sessions Page -->
+    <main id="sessions-content" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
+            <h1 class="text-4xl font-bold mb-8">My Sessions</h1>
+            
+            <!-- Tabs -->
+            <div class="mb-4 border-b border-gray-200">
+                <ul id="sessions-tabs" class="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
+                    <li class="mr-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg" data-tab="upcoming" role="tab">Upcoming</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg" data-tab="pending" role="tab">Pending</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg" data-tab="past" role="tab">Past</button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="sessions-tab-content">
+                <div id="upcoming-sessions-content" class="space-y-6" role="tabpanel"></div>
+                <div id="pending-sessions-content" class="hidden space-y-6" role="tabpanel"></div>
+                <div id="past-sessions-content" class="hidden space-y-6" role="tabpanel"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-2">Legacy<span class="text-indigo-400">Learners</span></h3>
+                    <p class="text-gray-400">Connecting generations through knowledge.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul>
+                        <li class="mb-2"><a href="#mission" class="hover:text-indigo-400">About Us</a></li>
+                        <li class="mb-2"><a href="#mentors" class="hover:text-indigo-400">Mentors</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400">Become a Mentor</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Connect With Us</h4>
+                    <!-- Social Media Icons -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.48 2.01h2.96v8.59H3.525v-8.59zM17.64 3.002H6.36C4.512 3.002 3 4.512 3 6.36v11.28c0 1.848 1.512 3.36 3.36 3.36h11.28c1.848 0 3.36-1.512 3.36-3.36V6.36c0-1.848-1.512-3.36-3.36-3.36z" clip-rule="evenodd" /></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 LegacyLearners. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Log In</h2>
+                <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="login-identifier" class="block text-sm font-medium text-gray-700 mb-1">Email or Username</label>
+                    <input type="text" id="login-identifier" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="text-right mb-6">
+                    <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:underline">Forgot Password?</a>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Create Your Account</h2>
+                <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="signup-form">
+                 <div class="mb-4">
+                    <label for="signup-username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <input type="text" id="signup-username" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="signup-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" id="signup-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="signup-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="signup-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-6">
+                    <label for="signup-confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Sign Up</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Book Session Modal -->
+    <div id="book-session-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[101]">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="book-session-title" class="text-2xl font-bold">Book a Session</h2>
+                <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="book-session-form">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select an available time slot:</label>
+                    <div id="time-slots-container" class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-1">
+                        <!-- Time slots will be populated here -->
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Book a Session</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="message-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[101]">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
+            <p id="message-text" class="text-lg mb-6"></p>
+            <button id="message-ok-btn" class="bg-indigo-600 text-white py-2 px-8 rounded-lg hover:bg-indigo-700 transition duration-300">OK</button>
+        </div>
+    </div>
+
+    <!-- Link to your custom JS file -->
+    <script src="mentor.js"></script>
+</body>
+</html>
+
