@@ -32,18 +32,22 @@
                 <a href="#mentors" class="text-gray-600 hover:text-indigo-600 transition duration-300">Find a Mentor</a>
                 <a href="#how-it-works" class="text-gray-600 hover:text-indigo-600 transition duration-300">How It Works</a>
             </div>
-            <div id="auth-links" class="hidden md:flex items-center space-x-4">
-                 <a href="#" id="login-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Log In</a>
-                 <a href="#" id="signup-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Sign Up</a>
+            <div class="flex items-center">
+                <div class="hidden md:flex items-center space-x-4">
+                    <div id="auth-links" class="flex items-center space-x-4">
+                         <a href="#" id="login-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Log In</a>
+                         <a href="#" id="signup-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Sign Up</a>
+                    </div>
+                    <div id="user-info" class="hidden items-center space-x-4">
+                        <span id="welcome-message" class="text-gray-700 font-semibold"></span>
+                        <a href="#" id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">Log Out</a>
+                    </div>
+                </div>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-indigo-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
             </div>
-            <div id="user-info" class="hidden items-center space-x-4">
-                <span id="welcome-message" class="text-gray-700 font-semibold"></span>
-                <a href="#" id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">Log Out</a>
-            </div>
-            <!-- Mobile Menu Button -->
-            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-indigo-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
         </nav>
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
@@ -162,7 +166,7 @@
         </section>
     </main>
 
-    <!-- User Dashboard -->
+    <!-- Learner Dashboard -->
     <main id="dashboard-content" class="hidden">
         <div class="container mx-auto px-6 py-12">
             <h1 id="dashboard-welcome" class="text-4xl font-bold mb-8"></h1>
@@ -189,6 +193,43 @@
         </div>
     </main>
     
+    <!-- Mentor Dashboard -->
+    <main id="mentor-dashboard-content" class="hidden">
+        <div class="container mx-auto px-6 py-12">
+            <h1 id="mentor-dashboard-welcome" class="text-4xl font-bold mb-2"></h1>
+            <p id="mentor-dashboard-date" class="text-gray-500 mb-8"></p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Widget 1 & 2 -->
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-4">Immediate Actions</h2>
+                        <div id="mentor-immediate-actions"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-4">Profile & Availability</h2>
+                        <!-- Profile Strength and Availability toggle here -->
+                    </div>
+                </div>
+                <!-- Widget 3 -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">My Upcoming Sessions</h2>
+                    <div id="mentor-upcoming-sessions-list" class="space-y-4"></div>
+                </div>
+                <!-- Widget 4 & 5 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:col-span-2">
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-4">Your Impact</h2>
+                        <!-- Impact stats here -->
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-4">Quick Links</h2>
+                        <!-- Quick links here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <!-- Profile Page -->
     <main id="profile-content" class="hidden">
         <div class="container mx-auto px-6 py-12">
@@ -356,7 +397,7 @@
                         <button class="inline-block p-4 border-b-2 rounded-t-lg" data-tab="upcoming" role="tab">Upcoming</button>
                     </li>
                     <li class="mr-2" role="presentation">
-                        <button class="inline-block p-4 border-b-2 rounded-t-lg" data-tab="pending" role="tab">Pending</button>
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg" data-tab="pending" role="tab">Pending Requests</button>
                     </li>
                     <li class="mr-2" role="presentation">
                         <button class="inline-block p-4 border-b-2 rounded-t-lg" data-tab="past" role="tab">Past</button>
@@ -406,21 +447,40 @@
     </footer>
 
     <!-- Modals -->
+    <!-- Role Choice Modal -->
+    <div id="role-choice-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl text-center">
+            <h2 id="role-choice-title" class="text-2xl font-bold mb-6">Join As...</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                <div class="p-4 flex flex-col items-center">
+                    <h3 class="text-lg font-semibold mb-2">A Learner</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Find experienced professionals to guide you on your journey.</p>
+                    <button data-role="learner" class="role-choice-btn w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition">I want to learn</button>
+                </div>
+                <div class="p-4 pt-8 md:pt-4 flex flex-col items-center">
+                    <h3 class="text-lg font-semibold mb-2">A Mentor</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Share your knowledge and experience with the next generation.</p>
+                    <button data-role="mentor" class="role-choice-btn w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition">I want to mentor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Modal -->
     <div id="login-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Log In</h2>
+                <h2 id="login-title" class="text-2xl font-bold">Log In</h2>
                 <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
             </div>
             <form id="login-form">
                 <div class="mb-4">
                     <label for="login-identifier" class="block text-sm font-medium text-gray-700 mb-1">Email or Username</label>
-                    <input type="text" id="login-identifier" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="text" id="login-identifier" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                 </div>
                 <div class="text-right mb-6">
                     <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:underline">Forgot Password?</a>
@@ -434,29 +494,29 @@
     <div id="signup-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Create Your Account</h2>
+                <h2 id="signup-title" class="text-2xl font-bold">Create Your Account</h2>
                 <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
             </div>
             <form id="signup-form">
                  <div class="mb-4">
                     <label for="signup-username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                    <input type="text" id="signup-username" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="text" id="signup-username" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label for="signup-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <input type="text" id="signup-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="text" id="signup-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                    <input type="email" id="signup-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="email" id="signup-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="signup-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="password" id="signup-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                 </div>
                 <div class="mb-6">
                     <label for="signup-confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                    <input type="password" id="signup-confirm-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="password" id="signup-confirm-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Sign Up</button>
             </form>
@@ -494,4 +554,5 @@
     <script src="mentor.js"></script>
 </body>
 </html>
+
 
