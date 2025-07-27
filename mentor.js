@@ -3,15 +3,17 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     let currentUser = null;
-    
+    let userRole = 'learner'; // Default role
+    let authAction = ''; // To track if user clicked 'login' or 'signup'
+
     // --- Sample Mentor Data ---
     const allMentors = [
-        { id: 1, name: 'Dr. R. A. Mashelkar', headline: 'Former Director General of CSIR', industry: 'Science & Innovation', expertise: ['Innovation', 'Startups', 'Leadership'], quote: 'Mentoring young innovators to build a better tomorrow.', image: 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Ramesh_Mashelkar_Apr09.jpg', joinedDate: '2025-07-20', about: 'Dr. Mashelkar is a national research professor and a renowned advocate for "inclusive innovation." With decades of experience leading one of India\'s largest research organizations, he is passionate about helping young minds turn their scientific ideas into impactful ventures.' },
-        { id: 2, name: 'Kiran Karnik', headline: 'Former President, NASSCOM', industry: 'IT & Policy', expertise: ['IT Professionals', 'Startups', 'Policy'], quote: 'Guiding the next generation of IT leaders.', image: 'https://www.apnic.net/wp-content/uploads/2015/08/kiran-karnik.jpg', joinedDate: '2025-07-22', about: 'Kiran Karnik played a pivotal role in shaping India\'s IT industry. He offers invaluable insights into technology trends, policy-making, and scaling technology businesses.' },
-        { id: 3, name: 'Ravi Venkatesan', headline: 'Former Chairman, Microsoft India', industry: 'Business Strategy', expertise: ['Social Entrepreneurs', 'Business Development', 'Leadership'], quote: 'Helping social entrepreneurs make a global impact.', image: 'https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2018/02/01/Photos/Processed/RaviVenkatesan-kI3F--621x414@LiveMint.jpg', joinedDate: '2025-07-15', about: 'Ravi Venkatesan is a business leader with a deep commitment to social change. He specializes in mentoring entrepreneurs who are building organizations that aim to solve critical societal challenges.' },
-        { id: 4, name: 'Dr. Devi Shetty', headline: 'Founder, Narayana Health', industry: 'Healthcare', expertise: ['Healthcare Innovation', 'Entrepreneurship', 'Low-cost Solutions'], quote: 'Promoting innovation in affordable healthcare.', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Devi_Shetty.jpg/800px-Devi_Shetty.jpg', joinedDate: '2025-07-25', about: 'A world-renowned cardiac surgeon, Dr. Devi Shetty is a pioneer in making high-quality healthcare accessible. He is eager to mentor health-tech innovators and entrepreneurs looking to disrupt the medical field.' },
-        { id: 5, name: 'Arun Maira', headline: 'Former Member, Planning Commission', industry: 'Policy & Strategy', expertise: ['Policy', 'Strategy', 'Leadership'], quote: 'Shaping future leaders through policy and strategic thinking.', image: 'https://placehold.co/400x400/a3a3a3/ffffff?text=Arun+Maira', joinedDate: '2025-06-30', about: 'Arun Maira has extensive experience in both the corporate world and public policy. He provides guidance on systems thinking, leadership, and navigating complex institutional challenges.' },
-        { id: 6, name: 'Prof. Deepak B. Phatak', headline: 'Professor (Retired), IIT Bombay', industry: 'Education Technology', expertise: ['EdTech', 'Computer Science', 'MOOCs'], quote: 'Leveraging technology for national education.', image: 'https://placehold.co/400x400/d4d4d4/ffffff?text=Prof.+Phatak', joinedDate: '2025-07-24', about: 'A stalwart of computer science education in India, Prof. Phatak has been instrumental in large-scale educational technology projects. He mentors those passionate about using tech to solve educational challenges.' },
+        { id: 1, name: 'Dr. R. A. Mashelkar', email: 'ramesh@mentor.com', headline: 'Former Director General of CSIR', industry: 'Science & Innovation', expertise: ['Innovation', 'Startups', 'Leadership'], quote: 'Mentoring young innovators to build a better tomorrow.', image: 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Ramesh_Mashelkar_Apr09.jpg', joinedDate: '2025-07-20', about: 'Dr. Mashelkar is a national research professor and a renowned advocate for "inclusive innovation." With decades of experience leading one of India\'s largest research organizations, he is passionate about helping young minds turn their scientific ideas into impactful ventures.' },
+        { id: 2, name: 'Kiran Karnik', email: 'kiran@mentor.com', headline: 'Former President, NASSCOM', industry: 'IT & Policy', expertise: ['IT Professionals', 'Startups', 'Policy'], quote: 'Guiding the next generation of IT leaders.', image: 'https://www.apnic.net/wp-content/uploads/2015/08/kiran-karnik.jpg', joinedDate: '2025-07-22', about: 'Kiran Karnik played a pivotal role in shaping India\'s IT industry. He offers invaluable insights into technology trends, policy-making, and scaling technology businesses.' },
+        { id: 3, name: 'Ravi Venkatesan', email: 'ravi@mentor.com', headline: 'Former Chairman, Microsoft India', industry: 'Business Strategy', expertise: ['Social Entrepreneurs', 'Business Development', 'Leadership'], quote: 'Helping social entrepreneurs make a global impact.', image: 'https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2018/02/01/Photos/Processed/RaviVenkatesan-kI3F--621x414@LiveMint.jpg', joinedDate: '2025-07-15', about: 'Ravi Venkatesan is a business leader with a deep commitment to social change. He specializes in mentoring entrepreneurs who are building organizations that aim to solve critical societal challenges.' },
+        { id: 4, name: 'Dr. Devi Shetty', email: 'devi@mentor.com', headline: 'Founder, Narayana Health', industry: 'Healthcare', expertise: ['Healthcare Innovation', 'Entrepreneurship', 'Low-cost Solutions'], quote: 'Promoting innovation in affordable healthcare.', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Devi_Shetty.jpg/800px-Devi_Shetty.jpg', joinedDate: '2025-07-25', about: 'A world-renowned cardiac surgeon, Dr. Devi Shetty is a pioneer in making high-quality healthcare accessible. He is eager to mentor health-tech innovators and entrepreneurs looking to disrupt the medical field.' },
+        { id: 5, name: 'Arun Maira', email: 'arun@mentor.com', headline: 'Former Member, Planning Commission', industry: 'Policy & Strategy', expertise: ['Policy', 'Strategy', 'Leadership'], quote: 'Shaping future leaders through policy and strategic thinking.', image: 'https://placehold.co/400x400/a3a3a3/ffffff?text=Arun+Maira', joinedDate: '2025-06-30', about: 'Arun Maira has extensive experience in both the corporate world and public policy. He provides guidance on systems thinking, leadership, and navigating complex institutional challenges.' },
+        { id: 6, name: 'Prof. Deepak B. Phatak', email: 'deepak@mentor.com', headline: 'Professor (Retired), IIT Bombay', industry: 'Education Technology', expertise: ['EdTech', 'Computer Science', 'MOOCs'], quote: 'Leveraging technology for national education.', image: 'https://placehold.co/400x400/d4d4d4/ffffff?text=Prof.+Phatak', joinedDate: '2025-07-24', about: 'A stalwart of computer science education in India, Prof. Phatak has been instrumental in large-scale educational technology projects. He mentors those passionate about using tech to solve educational challenges.' },
     ];
 
 
@@ -27,6 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const logoutBtn = document.getElementById('logout-btn');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
     const forgotPasswordLink = document.getElementById('forgot-password-link');
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
 
     // Dashboard Buttons
     const goToProfileBtn = document.getElementById('go-to-profile-btn');
@@ -36,11 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const backToFindMentorBtn = document.querySelector('.back-to-find-mentor-btn');
 
     // Modals
+    const roleChoiceModal = document.getElementById('role-choice-modal');
     const loginModal = document.getElementById('login-modal');
     const signupModal = document.getElementById('signup-modal');
     const messageModal = document.getElementById('message-modal');
     const bookSessionModal = document.getElementById('book-session-modal');
-    const allModals = [loginModal, signupModal, messageModal, bookSessionModal];
+    const allModals = [roleChoiceModal, loginModal, signupModal, messageModal, bookSessionModal];
 
     // Forms
     const loginForm = document.getElementById('login-form');
@@ -57,6 +63,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileUserInfo = document.getElementById('mobile-user-info');
     const mobileWelcomeMessage = document.getElementById('mobile-welcome-message');
     const dashboardWelcome = document.getElementById('dashboard-welcome');
+    const mentorDashboardWelcome = document.getElementById('mentor-dashboard-welcome');
+    const mentorDashboardDate = document.getElementById('mentor-dashboard-date');
+    const mentorImmediateActions = document.getElementById('mentor-immediate-actions');
+    const mentorUpcomingSessionsList = document.getElementById('mentor-upcoming-sessions-list');
 
     // Profile Page Elements
     const profileCompletionText = document.getElementById('profile-completion-text');
@@ -126,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
             profileGuidanceChecklist.innerHTML += `
                 <label class="flex items-center space-x-2 cursor-pointer">
                     <input type="checkbox" value="${option}" class="form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
-                    <span class="text-gray-700">${option}</span>
+                    <span class="text-gray-700 dark:text-gray-300">${option}</span>
                 </label>
             `;
         });
@@ -147,8 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
         mobileUserInfo.classList.remove('hidden');
         mobileWelcomeMessage.textContent = `Hi, ${firstName}!`;
 
-        dashboardWelcome.textContent = `Welcome to your Dashboard, ${firstName}!`;
-        showView('dashboard-content');
+        if (user.role === 'mentor') {
+            renderMentorDashboard();
+            showView('mentor-dashboard-content');
+        } else {
+            dashboardWelcome.textContent = `Welcome to your Dashboard, ${firstName}!`;
+            showView('dashboard-content');
+        }
         
         profileName.value = user.name || '';
         profileHeadline.value = user.profile.headline || '';
@@ -220,11 +235,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Event Listeners ---
     mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
     
-    const openLoginModal = (e) => { e.preventDefault(); openModal(loginModal); };
-    [loginBtn, mobileLoginBtn].forEach(btn => btn.addEventListener('click', openLoginModal));
-    
-    const openSignupModal = (e) => { e.preventDefault(); openModal(signupModal); };
-    [signupBtn, mobileSignupBtn, joinNowBtn].forEach(btn => btn.addEventListener('click', openSignupModal));
+    const startAuthProcess = (action) => {
+        authAction = action;
+        const title = action === 'login' ? 'Log In As...' : 'Join As...';
+        document.getElementById('role-choice-title').textContent = title;
+        openModal(roleChoiceModal);
+    };
+
+    loginBtn.addEventListener('click', (e) => { e.preventDefault(); startAuthProcess('login'); });
+    mobileLoginBtn.addEventListener('click', (e) => { e.preventDefault(); startAuthProcess('login'); });
+    signupBtn.addEventListener('click', (e) => { e.preventDefault(); startAuthProcess('signup'); });
+    mobileSignupBtn.addEventListener('click', (e) => { e.preventDefault(); startAuthProcess('signup'); });
+    joinNowBtn.addEventListener('click', (e) => { e.preventDefault(); startAuthProcess('signup'); });
+
+    roleChoiceModal.querySelectorAll('.role-choice-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            userRole = btn.dataset.role;
+            closeModal(roleChoiceModal);
+
+            if (authAction === 'login') {
+                document.getElementById('login-title').textContent = `Log In as a ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
+                openModal(loginModal);
+            } else if (authAction === 'signup') {
+                document.getElementById('signup-title').textContent = `Create ${userRole === 'learner' ? 'a Learner' : 'a Mentor'} Account`;
+                openModal(signupModal);
+            }
+        });
+    });
 
     const handleLogout = (e) => { e.preventDefault(); updateUIForLogout(); showMessage('You have been logged out.'); };
     [logoutBtn, mobileLogoutBtn].forEach(btn => btn.addEventListener('click', handleLogout));
@@ -263,7 +300,15 @@ document.addEventListener('DOMContentLoaded', function() {
         renderMySessions();
         showView('sessions-content');
     });
-    backToDashboardBtns.forEach(btn => btn.addEventListener('click', () => showView('dashboard-content')));
+    backToDashboardBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (currentUser && currentUser.role === 'mentor') {
+                showView('mentor-dashboard-content');
+            } else {
+                showView('dashboard-content');
+            }
+        });
+    });
     backToFindMentorBtn.addEventListener('click', () => showView('find-mentor-page-content'));
 
     // --- Real-time Profile Completion Update ---
@@ -302,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (users.find(user => user.username === username)) return showMessage('This username is already taken.');
 
         const newUser = { 
-            name, username, email, password,
+            name, username, email, password, role: userRole,
             profile: {
                 headline: '', location: '', focus: '', interests: [],
                 guidance: [], goals: '', education: '', skills: [], expectations: ''
@@ -313,7 +358,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         closeModal(signupModal);
         signupForm.reset();
-        showMessage('Account created! Please log in.', () => openModal(loginModal));
+        showMessage('Account created! Please log in.', () => {
+            document.getElementById('login-title').textContent = `Log In as a ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
+            openModal(loginModal)
+        });
     });
 
     loginForm.addEventListener('submit', (e) => {
@@ -321,14 +369,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const identifier = document.getElementById('login-identifier').value.trim();
         const password = document.getElementById('login-password').value;
         const users = JSON.parse(localStorage.getItem('legacyLearnersUsers')) || [];
-        const user = users.find(u => (u.email === identifier || u.username === identifier) && u.password === password);
+        const user = users.find(u => (u.email === identifier || u.username === identifier) && u.password === password && u.role === userRole);
 
         if (user) {
             closeModal(loginModal);
             loginForm.reset();
             updateUIForLogin(user);
         } else {
-            showMessage('Invalid credentials. Please try again.');
+            showMessage(`Invalid credentials for a ${userRole}. Please try again or check your role.`);
         }
     });
     
@@ -379,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
             mentorId: mentor.id,
             menteeId: currentUser.email,
             slot: selectedSlot.value,
-            status: 'Pending' // New sessions are now pending
+            status: 'Pending'
         };
         sessions.push(newSession);
         localStorage.setItem('legacyLearnersSessions', JSON.stringify(sessions));
@@ -402,18 +450,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img src="${mentor.image}" alt="Portrait of ${mentor.name}" class="w-32 h-32 rounded-full object-cover border-4 border-indigo-200">
                 <div class="text-center md:text-left">
                     <h2 class="text-3xl font-bold">${mentor.name}</h2>
-                    <p class="text-indigo-600 font-semibold">${mentor.headline}</p>
+                    <p class="text-indigo-600 dark:text-indigo-400 font-semibold">${mentor.headline}</p>
                 </div>
             </div>
-            <hr class="my-8">
+            <hr class="my-8 dark:border-gray-700">
             <div>
                 <h3 class="text-xl font-bold mb-2">About Me</h3>
-                <p class="text-gray-600">${mentor.about}</p>
+                <p class="text-gray-600 dark:text-gray-400">${mentor.about}</p>
             </div>
             <div class="mt-6">
                 <h3 class="text-xl font-bold mb-2">My Expertise</h3>
                 <div class="flex flex-wrap gap-2">
-                    ${mentor.expertise.map(tag => `<span class="bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full">${tag}</span>`).join('')}
+                    ${mentor.expertise.map(tag => `<span class="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 text-sm font-semibold px-3 py-1 rounded-full">${tag}</span>`).join('')}
                 </div>
             </div>
             <div class="mt-8 text-center">
@@ -428,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const renderMentors = (mentors) => {
         findMentorGrid.innerHTML = '';
         if (mentors.length === 0) {
-            findMentorGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No mentors found matching your criteria.</p>`;
+            findMentorGrid.innerHTML = `<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No mentors found matching your criteria.</p>`;
             mentorResultsCount.textContent = '0 Mentors Found';
             return;
         }
@@ -437,16 +485,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         mentors.forEach(mentor => {
             const card = document.createElement('div');
-            card.className = 'bg-white rounded-lg shadow-lg overflow-hidden flex flex-col';
+            card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col';
             card.innerHTML = `
                 <img src="${mentor.image}" alt="Portrait of ${mentor.name}" class="w-full h-40 object-cover">
                 <div class="p-4 flex flex-col flex-grow">
                     <h3 class="text-lg font-bold">${mentor.name}</h3>
-                    <p class="text-sm text-indigo-600 font-semibold mb-2">${mentor.headline}</p>
-                    <p class="text-gray-600 text-sm italic mb-3">"${mentor.quote}"</p>
+                    <p class="text-sm text-indigo-600 dark:text-indigo-400 font-semibold mb-2">${mentor.headline}</p>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm italic mb-3">"${mentor.quote}"</p>
                     <div class="flex-grow"></div>
                     <div class="flex flex-wrap gap-2 mb-4">
-                        ${mentor.expertise.map(tag => `<span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}
+                        ${mentor.expertise.map(tag => `<span class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}
                     </div>
                     <div class="flex items-center justify-between gap-2">
                         <button data-mentor-id="${mentor.id}" class="view-profile-btn card-btn card-btn-primary flex-1">View Profile</button>
@@ -550,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function() {
             timeSlotsContainer.innerHTML += `
                 <div>
                     <input type="radio" name="time-slot" id="slot-${index}" value="${slotValue}" class="hidden peer">
-                    <label for="slot-${index}" class="block text-center p-2 border rounded-lg cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:bg-gray-100">
+                    <label for="slot-${index}" class="block text-center p-2 border rounded-lg cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
                         <p class="text-sm font-semibold">${formattedDate}</p>
                         <p class="text-xs">${formattedTime}</p>
                     </label>
@@ -570,7 +618,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render Upcoming
         if (upcoming.length === 0) {
-            upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions. Time to find a mentor!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
+            upcomingSessionsContent.innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center"><p class="text-gray-600 dark:text-gray-400">You have no upcoming sessions. Time to find a mentor!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
         } else {
             upcomingSessionsContent.innerHTML = upcoming.map(session => {
                 const mentor = allMentors.find(m => m.id === session.mentorId);
@@ -578,16 +626,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const formattedDate = sessionDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 const formattedTime = sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                 return `
-                    <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
                         <div class="flex flex-col sm:flex-row gap-6">
                             <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
                             <div>
                                 <h3 class="text-2xl font-bold">Session with ${mentor.name}</h3>
-                                <p class="text-gray-700 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
+                                <p class="text-gray-700 dark:text-gray-300 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
                                 <div class="mt-4 flex flex-wrap gap-2">
                                     <button class="card-btn card-btn-primary">Join Call</button>
                                     <button class="card-btn card-btn-secondary">Reschedule</button>
-                                    <button class="card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
+                                    <button class="card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200 dark:!bg-red-900/50 dark:!text-red-300 dark:hover:!bg-red-900">Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -598,17 +646,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render Pending
         if (pending.length === 0) {
-            pendingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no pending session requests.</p></div>`;
+            pendingSessionsContent.innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center"><p class="text-gray-600 dark:text-gray-400">You have no pending session requests.</p></div>`;
         } else {
             pendingSessionsContent.innerHTML = pending.map(session => {
                 const mentor = allMentors.find(m => m.id === session.mentorId);
                 return `
-                    <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
                         <div class="flex items-center gap-6">
                             <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
                             <div>
                                 <h3 class="text-xl font-bold">Request sent to ${mentor.name}</h3>
-                                <p class="text-gray-500">Awaiting response for session on ${new Date(session.slot).toLocaleDateString()}</p>
+                                <p class="text-gray-500 dark:text-gray-400">Awaiting response for session on ${new Date(session.slot).toLocaleDateString()}</p>
                                 <button class="mt-2 text-red-500 hover:underline text-sm">Withdraw Request</button>
                             </div>
                         </div>
@@ -619,17 +667,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render Past
         if (past.length === 0) {
-            pastSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no past sessions.</p></div>`;
+            pastSessionsContent.innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center"><p class="text-gray-600 dark:text-gray-400">You have no past sessions.</p></div>`;
         } else {
             pastSessionsContent.innerHTML = past.map(session => {
                 const mentor = allMentors.find(m => m.id === session.mentorId);
                 return `
-                    <div class="bg-white p-6 rounded-lg shadow-md opacity-70">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md opacity-70">
                         <div class="flex items-center gap-6">
                             <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
                             <div>
                                 <h3 class="text-xl font-bold">Session with ${mentor.name}</h3>
-                                <p class="text-gray-500">Completed on ${new Date(session.slot).toLocaleDateString()}</p>
+                                <p class="text-gray-500 dark:text-gray-400">Completed on ${new Date(session.slot).toLocaleDateString()}</p>
                                 <div class="mt-2 flex gap-2">
                                     <button class="card-btn card-btn-secondary">Leave a Review</button>
                                     <button class="card-btn card-btn-secondary">Schedule Follow-up</button>
@@ -646,11 +694,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.tagName === 'BUTTON') {
             const tab = e.target.dataset.tab;
             sessionsTabs.querySelectorAll('button').forEach(btn => {
-                btn.classList.remove('border-indigo-500', 'text-indigo-600');
-                btn.classList.add('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300');
+                btn.classList.remove('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400', 'dark:border-indigo-400');
+                btn.classList.add('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300', 'dark:hover:text-gray-300');
             });
-            e.target.classList.add('border-indigo-500', 'text-indigo-600');
-            e.target.classList.remove('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300');
+            e.target.classList.add('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400', 'dark:border-indigo-400');
+            e.target.classList.remove('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300', 'dark:hover:text-gray-300');
             
             sessionsTabContent.querySelectorAll('[role="tabpanel"]').forEach(panel => {
                 panel.classList.add('hidden');
@@ -659,8 +707,102 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    const renderMentorDashboard = () => {
+        const firstName = currentUser.name.split(' ')[0];
+        mentorDashboardWelcome.textContent = `Good Morning, ${firstName}! Welcome to your Dashboard.`;
+        mentorDashboardDate.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        const sessions = JSON.parse(localStorage.getItem('legacyLearnersSessions')) || [];
+        const myMentorId = allMentors.find(m => m.email === currentUser.email)?.id;
+        if (!myMentorId) return;
+
+        const pendingRequests = sessions.filter(s => s.mentorId === myMentorId && s.status === 'Pending');
+        const upcomingToday = sessions.filter(s => {
+            const sessionDate = new Date(s.slot);
+            const today = new Date();
+            return s.mentorId === myMentorId && s.status === 'Confirmed' &&
+                   sessionDate.getDate() === today.getDate() &&
+                   sessionDate.getMonth() === today.getMonth() &&
+                   sessionDate.getFullYear() === today.getFullYear();
+        });
+
+        // Immediate Actions
+        mentorImmediateActions.innerHTML = `
+            <div class="space-y-3">
+                <p>You have ${pendingRequests.length} new mentee requests.</p>
+                <button class="view-requests-btn card-btn card-btn-primary">View Requests</button>
+                <hr class="my-4 dark:border-gray-700">
+                <p>You have ${upcomingToday.length} upcoming session${upcomingToday.length !== 1 ? 's' : ''} today.</p>
+                <button class="view-schedule-btn card-btn card-btn-primary">View Schedule</button>
+            </div>
+        `;
+
+        // Upcoming Sessions List
+        const nextSessions = sessions.filter(s => s.mentorId === myMentorId && s.status === 'Confirmed' && new Date(s.slot) > new Date()).slice(0, 2);
+        if (nextSessions.length > 0) {
+            mentorUpcomingSessionsList.innerHTML = nextSessions.map(session => {
+                const users = JSON.parse(localStorage.getItem('legacyLearnersUsers')) || [];
+                const mentee = users.find(u => u.email === session.menteeId);
+                const sessionDate = new Date(session.slot);
+                return `
+                    <div class="flex items-center justify-between p-2 border-b dark:border-gray-700">
+                        <div class="flex items-center gap-3">
+                            <img src="https://placehold.co/40x40/d4d4d4/ffffff?text=${mentee.name.charAt(0)}" alt="${mentee.name}" class="w-10 h-10 rounded-full">
+                            <span>${mentee.name}</span>
+                        </div>
+                        <span>${sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} @ ${sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                        <button class="card-btn card-btn-secondary">Join Call</button>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            mentorUpcomingSessionsList.innerHTML = `<p class="text-gray-500 dark:text-gray-400">No upcoming sessions.</p>`;
+        }
+    };
+
+    document.body.addEventListener('click', (e) => {
+        if (e.target.classList.contains('view-requests-btn')) {
+            renderMySessions();
+            sessionsTabs.querySelector('button[data-tab="pending"]').click();
+            showView('sessions-content');
+        }
+        if (e.target.classList.contains('view-schedule-btn')) {
+            renderMySessions();
+            sessionsTabs.querySelector('button[data-tab="upcoming"]').click();
+            showView('sessions-content');
+        }
+    });
+
+    // --- Theme Toggle Logic ---
+    const applyTheme = (theme) => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            lightIcon.classList.remove('hidden');
+            darkIcon.classList.add('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            darkIcon.classList.remove('hidden');
+            lightIcon.classList.add('hidden');
+        }
+    };
+
+    themeToggleBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        const newTheme = isDark ? 'light' : 'dark';
+        localStorage.setItem('color-theme', newTheme);
+        applyTheme(newTheme);
+    });
+
+    const initializeTheme = () => {
+        const savedTheme = localStorage.getItem('color-theme');
+        // Default to light mode if no theme is saved
+        applyTheme(savedTheme || 'light');
+    };
+
+
     // --- Initial Setup ---
     function initialize() {
+        initializeTheme();
         populateGuidanceChecklist();
         populateFilters();
         const savedUser = localStorage.getItem('legacyLearnersCurrentUser');
