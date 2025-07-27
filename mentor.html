@@ -23,7 +23,7 @@
 
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-2xl font-bold text-gray-800">
                 Legacy<span class="text-indigo-600">Learners</span>
             </a>
@@ -50,17 +50,17 @@
             </div>
         </nav>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
-            <div id="mobile-main-nav">
+        <div id="mobile-menu" class="hidden md:hidden px-4 sm:px-6 pb-4 border-t">
+            <div id="mobile-main-nav" class="mt-4 space-y-2">
                 <a href="#mission" class="block py-2 text-gray-600 hover:text-indigo-600">Our Mission</a>
                 <a href="#mentors" class="block py-2 text-gray-600 hover:text-indigo-600">Find a Mentor</a>
                 <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-indigo-600">How It Works</a>
             </div>
-            <div id="mobile-auth-links" class="mt-4">
+            <div id="mobile-auth-links" class="mt-4 pt-4 border-t">
                 <a href="#" id="mobile-login-btn" class="block text-center w-full py-2 mb-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Log In</a>
-                <a href="#" id="mobile-signup-btn" class="block text-center w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Sign Up</a>
+                <a href="#" id="mobile-signup-btn" class="block text-center w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Sign Up</a>
             </div>
-             <div id="mobile-user-info" class="hidden mt-4">
+             <div id="mobile-user-info" class="hidden mt-4 pt-4 border-t">
                 <span id="mobile-welcome-message" class="block text-center py-2 text-gray-700 font-semibold"></span>
                 <a href="#" id="mobile-logout-btn" class="block text-center w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Log Out</a>
             </div>
@@ -71,7 +71,7 @@
     <main id="guest-content">
         <!-- Hero Section -->
         <section class="hero-bg py-20 md:py-32">
-            <div class="container mx-auto px-6 text-center">
+            <div class="container mx-auto px-4 sm:px-6 text-center">
                 <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-4 animate-fade-in-up">Experience Meets Ambition.</h1>
                 <p class="text-lg md:text-xl text-indigo-200 max-w-3xl mx-auto mb-8 animate-fade-in-up animate-delay-300">A place where retired professionals share a lifetime of knowledge with the next generation of leaders, creators, and innovators.</p>
                 <a href="#mentors" class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300 text-lg animate-fade-in-up animate-delay-600">Explore Mentors</a>
@@ -79,8 +79,8 @@
         </section>
 
         <!-- Mission Section -->
-        <section id="mission" class="py-20">
-            <div class="container mx-auto px-6 text-center">
+        <section id="mission" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6 text-center">
                 <h2 class="text-3xl font-bold mb-2">Our Mission</h2>
                 <p class="text-indigo-600 font-semibold mb-8">Bridging the Generation Gap & Empowering Seniors</p>
                 <p class="max-w-4xl mx-auto text-gray-600">We believe that wisdom is timeless. Our mission is to create a vibrant community where retirees can continue to make a meaningful impact by mentoring young people. It's about more than just sharing skills; it's about connecting generations, fostering mutual respect, and ensuring valuable life lessons are passed on.</p>
@@ -88,8 +88,8 @@
         </section>
         
         <!-- How It Works Section -->
-        <section id="how-it-works" class="bg-white py-20">
-            <div class="container mx-auto px-6">
+        <section id="how-it-works" class="bg-white py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6">
                 <h2 class="text-3xl font-bold text-center mb-12">Get Started in 3 Easy Steps</h2>
                 <div class="grid md:grid-cols-3 gap-12 text-center">
                     <div class="flex flex-col items-center">
@@ -112,8 +112,8 @@
         </section>
 
         <!-- Featured Mentors Section -->
-        <section id="mentors" class="py-20">
-            <div class="container mx-auto px-6">
+        <section id="mentors" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6">
                 <h2 class="text-3xl font-bold text-center mb-12">Meet Some of Our Mentors</h2>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <!-- Mentor Card 1 -->
@@ -158,7 +158,7 @@
         
         <!-- CTA Section -->
         <section id="cta-section" class="bg-indigo-600">
-            <div class="container mx-auto px-6 py-20 text-center">
+            <div class="container mx-auto px-4 sm:px-6 py-20 text-center">
                 <h2 class="text-3xl font-bold text-white mb-4">Ready to Share or Eager to Learn?</h2>
                 <p class="text-indigo-200 max-w-2xl mx-auto mb-8">Join our community today and become part of a movement that values wisdom, experience, and connection.</p>
                 <a href="#" id="join-now-btn" class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300 text-lg">Join for Free</a>
@@ -168,8 +168,8 @@
 
     <!-- Learner Dashboard -->
     <main id="dashboard-content" class="hidden">
-        <div class="container mx-auto px-6 py-12">
-            <h1 id="dashboard-welcome" class="text-4xl font-bold mb-8"></h1>
+        <div class="container mx-auto px-4 sm:px-6 py-12">
+            <h1 id="dashboard-welcome" class="text-3xl md:text-4xl font-bold mb-8"></h1>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Dashboard Card 1: My Profile -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
@@ -195,8 +195,8 @@
     
     <!-- Mentor Dashboard -->
     <main id="mentor-dashboard-content" class="hidden">
-        <div class="container mx-auto px-6 py-12">
-            <h1 id="mentor-dashboard-welcome" class="text-4xl font-bold mb-2"></h1>
+        <div class="container mx-auto px-4 sm:px-6 py-12">
+            <h1 id="mentor-dashboard-welcome" class="text-3xl md:text-4xl font-bold mb-2"></h1>
             <p id="mentor-dashboard-date" class="text-gray-500 mb-8"></p>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Widget 1 & 2 -->
@@ -232,9 +232,9 @@
 
     <!-- Profile Page -->
     <main id="profile-content" class="hidden">
-        <div class="container mx-auto px-6 py-12">
+        <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
-            <h1 class="text-4xl font-bold mb-4">My Profile</h1>
+            <h1 class="text-3xl md:text-4xl font-bold mb-4">My Profile</h1>
             
             <!-- Profile Completion Bar -->
             <div class="mb-8">
@@ -327,7 +327,7 @@
 
     <!-- Find a Mentor Page -->
     <main id="find-mentor-page-content" class="hidden">
-        <div class="container mx-auto px-6 py-12">
+        <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
             <div class="flex flex-col md:flex-row gap-8">
                 <!-- Filters Sidebar -->
@@ -376,7 +376,7 @@
 
     <!-- Mentor Profile Page -->
     <main id="mentor-profile-content" class="hidden">
-        <div class="container mx-auto px-6 py-12">
+        <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-find-mentor-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Search</button>
             <div id="mentor-profile-details" class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
                 <!-- Mentor details will be populated here by JS -->
@@ -386,9 +386,9 @@
 
     <!-- My Sessions Page -->
     <main id="sessions-content" class="hidden">
-        <div class="container mx-auto px-6 py-12">
+        <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
-            <h1 class="text-4xl font-bold mb-8">My Sessions</h1>
+            <h1 class="text-3xl md:text-4xl font-bold mb-8">My Sessions</h1>
             
             <!-- Tabs -->
             <div class="mb-4 border-b border-gray-200">
