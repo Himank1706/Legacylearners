@@ -29,9 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const logoutBtn = document.getElementById('logout-btn');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
     const forgotPasswordLink = document.getElementById('forgot-password-link');
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const darkIcon = document.getElementById('theme-toggle-dark-icon');
-    const lightIcon = document.getElementById('theme-toggle-light-icon');
 
     // Dashboard Buttons
     const goToProfileBtn = document.getElementById('go-to-profile-btn');
@@ -136,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
             profileGuidanceChecklist.innerHTML += `
                 <label class="flex items-center space-x-2 cursor-pointer">
                     <input type="checkbox" value="${option}" class="form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
-                    <span class="text-gray-700 dark:text-gray-300">${option}</span>
+                    <span class="text-gray-700">${option}</span>
                 </label>
             `;
         });
@@ -450,18 +447,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img src="${mentor.image}" alt="Portrait of ${mentor.name}" class="w-32 h-32 rounded-full object-cover border-4 border-indigo-200">
                 <div class="text-center md:text-left">
                     <h2 class="text-3xl font-bold">${mentor.name}</h2>
-                    <p class="text-indigo-600 dark:text-indigo-400 font-semibold">${mentor.headline}</p>
+                    <p class="text-indigo-600 font-semibold">${mentor.headline}</p>
                 </div>
             </div>
-            <hr class="my-8 dark:border-gray-700">
+            <hr class="my-8">
             <div>
                 <h3 class="text-xl font-bold mb-2">About Me</h3>
-                <p class="text-gray-600 dark:text-gray-400">${mentor.about}</p>
+                <p class="text-gray-600">${mentor.about}</p>
             </div>
             <div class="mt-6">
                 <h3 class="text-xl font-bold mb-2">My Expertise</h3>
                 <div class="flex flex-wrap gap-2">
-                    ${mentor.expertise.map(tag => `<span class="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 text-sm font-semibold px-3 py-1 rounded-full">${tag}</span>`).join('')}
+                    ${mentor.expertise.map(tag => `<span class="bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full">${tag}</span>`).join('')}
                 </div>
             </div>
             <div class="mt-8 text-center">
@@ -476,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const renderMentors = (mentors) => {
         findMentorGrid.innerHTML = '';
         if (mentors.length === 0) {
-            findMentorGrid.innerHTML = `<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No mentors found matching your criteria.</p>`;
+            findMentorGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No mentors found matching your criteria.</p>`;
             mentorResultsCount.textContent = '0 Mentors Found';
             return;
         }
@@ -485,16 +482,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         mentors.forEach(mentor => {
             const card = document.createElement('div');
-            card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col';
+            card.className = 'bg-white rounded-lg shadow-lg overflow-hidden flex flex-col';
             card.innerHTML = `
                 <img src="${mentor.image}" alt="Portrait of ${mentor.name}" class="w-full h-40 object-cover">
                 <div class="p-4 flex flex-col flex-grow">
                     <h3 class="text-lg font-bold">${mentor.name}</h3>
-                    <p class="text-sm text-indigo-600 dark:text-indigo-400 font-semibold mb-2">${mentor.headline}</p>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm italic mb-3">"${mentor.quote}"</p>
+                    <p class="text-sm text-indigo-600 font-semibold mb-2">${mentor.headline}</p>
+                    <p class="text-gray-600 text-sm italic mb-3">"${mentor.quote}"</p>
                     <div class="flex-grow"></div>
                     <div class="flex flex-wrap gap-2 mb-4">
-                        ${mentor.expertise.map(tag => `<span class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}
+                        ${mentor.expertise.map(tag => `<span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}
                     </div>
                     <div class="flex items-center justify-between gap-2">
                         <button data-mentor-id="${mentor.id}" class="view-profile-btn card-btn card-btn-primary flex-1">View Profile</button>
@@ -598,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
             timeSlotsContainer.innerHTML += `
                 <div>
                     <input type="radio" name="time-slot" id="slot-${index}" value="${slotValue}" class="hidden peer">
-                    <label for="slot-${index}" class="block text-center p-2 border rounded-lg cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+                    <label for="slot-${index}" class="block text-center p-2 border rounded-lg cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:bg-gray-100">
                         <p class="text-sm font-semibold">${formattedDate}</p>
                         <p class="text-xs">${formattedTime}</p>
                     </label>
@@ -618,7 +615,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render Upcoming
         if (upcoming.length === 0) {
-            upcomingSessionsContent.innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center"><p class="text-gray-600 dark:text-gray-400">You have no upcoming sessions. Time to find a mentor!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
+            upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions. Time to find a mentor!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
         } else {
             upcomingSessionsContent.innerHTML = upcoming.map(session => {
                 const mentor = allMentors.find(m => m.id === session.mentorId);
@@ -626,16 +623,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const formattedDate = sessionDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 const formattedTime = sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                 return `
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="flex flex-col sm:flex-row gap-6">
                             <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
                             <div>
                                 <h3 class="text-2xl font-bold">Session with ${mentor.name}</h3>
-                                <p class="text-gray-700 dark:text-gray-300 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
+                                <p class="text-gray-700 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
                                 <div class="mt-4 flex flex-wrap gap-2">
                                     <button class="card-btn card-btn-primary">Join Call</button>
                                     <button class="card-btn card-btn-secondary">Reschedule</button>
-                                    <button class="card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200 dark:!bg-red-900/50 dark:!text-red-300 dark:hover:!bg-red-900">Cancel</button>
+                                    <button class="card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -646,17 +643,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render Pending
         if (pending.length === 0) {
-            pendingSessionsContent.innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center"><p class="text-gray-600 dark:text-gray-400">You have no pending session requests.</p></div>`;
+            pendingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no pending session requests.</p></div>`;
         } else {
             pendingSessionsContent.innerHTML = pending.map(session => {
                 const mentor = allMentors.find(m => m.id === session.mentorId);
                 return `
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="flex items-center gap-6">
                             <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
                             <div>
                                 <h3 class="text-xl font-bold">Request sent to ${mentor.name}</h3>
-                                <p class="text-gray-500 dark:text-gray-400">Awaiting response for session on ${new Date(session.slot).toLocaleDateString()}</p>
+                                <p class="text-gray-500">Awaiting response for session on ${new Date(session.slot).toLocaleDateString()}</p>
                                 <button class="mt-2 text-red-500 hover:underline text-sm">Withdraw Request</button>
                             </div>
                         </div>
@@ -667,17 +664,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render Past
         if (past.length === 0) {
-            pastSessionsContent.innerHTML = `<div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center"><p class="text-gray-600 dark:text-gray-400">You have no past sessions.</p></div>`;
+            pastSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no past sessions.</p></div>`;
         } else {
             pastSessionsContent.innerHTML = past.map(session => {
                 const mentor = allMentors.find(m => m.id === session.mentorId);
                 return `
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md opacity-70">
+                    <div class="bg-white p-6 rounded-lg shadow-md opacity-70">
                         <div class="flex items-center gap-6">
                             <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
                             <div>
                                 <h3 class="text-xl font-bold">Session with ${mentor.name}</h3>
-                                <p class="text-gray-500 dark:text-gray-400">Completed on ${new Date(session.slot).toLocaleDateString()}</p>
+                                <p class="text-gray-500">Completed on ${new Date(session.slot).toLocaleDateString()}</p>
                                 <div class="mt-2 flex gap-2">
                                     <button class="card-btn card-btn-secondary">Leave a Review</button>
                                     <button class="card-btn card-btn-secondary">Schedule Follow-up</button>
@@ -694,11 +691,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.tagName === 'BUTTON') {
             const tab = e.target.dataset.tab;
             sessionsTabs.querySelectorAll('button').forEach(btn => {
-                btn.classList.remove('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400', 'dark:border-indigo-400');
-                btn.classList.add('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300', 'dark:hover:text-gray-300');
+                btn.classList.remove('border-indigo-500', 'text-indigo-600');
+                btn.classList.add('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300');
             });
-            e.target.classList.add('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400', 'dark:border-indigo-400');
-            e.target.classList.remove('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300', 'dark:hover:text-gray-300');
+            e.target.classList.add('border-indigo-500', 'text-indigo-600');
+            e.target.classList.remove('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300');
             
             sessionsTabContent.querySelectorAll('[role="tabpanel"]').forEach(panel => {
                 panel.classList.add('hidden');
@@ -731,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="space-y-3">
                 <p>You have ${pendingRequests.length} new mentee requests.</p>
                 <button class="view-requests-btn card-btn card-btn-primary">View Requests</button>
-                <hr class="my-4 dark:border-gray-700">
+                <hr class="my-4">
                 <p>You have ${upcomingToday.length} upcoming session${upcomingToday.length !== 1 ? 's' : ''} today.</p>
                 <button class="view-schedule-btn card-btn card-btn-primary">View Schedule</button>
             </div>
@@ -745,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const mentee = users.find(u => u.email === session.menteeId);
                 const sessionDate = new Date(session.slot);
                 return `
-                    <div class="flex items-center justify-between p-2 border-b dark:border-gray-700">
+                    <div class="flex items-center justify-between p-2 border-b">
                         <div class="flex items-center gap-3">
                             <img src="https://placehold.co/40x40/d4d4d4/ffffff?text=${mentee.name.charAt(0)}" alt="${mentee.name}" class="w-10 h-10 rounded-full">
                             <span>${mentee.name}</span>
@@ -756,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }).join('');
         } else {
-            mentorUpcomingSessionsList.innerHTML = `<p class="text-gray-500 dark:text-gray-400">No upcoming sessions.</p>`;
+            mentorUpcomingSessionsList.innerHTML = `<p class="text-gray-500">No upcoming sessions.</p>`;
         }
     };
 
@@ -772,37 +769,9 @@ document.addEventListener('DOMContentLoaded', function() {
             showView('sessions-content');
         }
     });
-
-    // --- Theme Toggle Logic ---
-    const applyTheme = (theme) => {
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-            lightIcon.classList.remove('hidden');
-            darkIcon.classList.add('hidden');
-        } else {
-            document.documentElement.classList.remove('dark');
-            darkIcon.classList.remove('hidden');
-            lightIcon.classList.add('hidden');
-        }
-    };
-
-    themeToggleBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        const newTheme = isDark ? 'light' : 'dark';
-        localStorage.setItem('color-theme', newTheme);
-        applyTheme(newTheme);
-    });
-
-    const initializeTheme = () => {
-        const savedTheme = localStorage.getItem('color-theme');
-        // Default to light mode if no theme is saved
-        applyTheme(savedTheme || 'light');
-    };
-
-
+    
     // --- Initial Setup ---
     function initialize() {
-        initializeTheme();
         populateGuidanceChecklist();
         populateFilters();
         const savedUser = localStorage.getItem('legacyLearnersCurrentUser');
