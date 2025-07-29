@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentUser = null;
     let userRole = 'learner'; // Default role
     let authAction = ''; // To track if user clicked 'login' or 'signup'
+  
 
-    // --- Sample Mentor Data ---
+    // --- Sample Mentor Data (This will be replaced by data from your database) ---
     const allMentors = [
         { id: 1, name: 'Dr. R. A. Mashelkar', email: 'ramesh@mentor.com', headline: 'Former Director General of CSIR', industry: 'Science & Innovation', expertise: ['Innovation', 'Startups', 'Leadership'], quote: 'Mentoring young innovators to build a better tomorrow.', image: 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Ramesh_Mashelkar_Apr09.jpg', joinedDate: '2025-07-20', about: 'Dr. Mashelkar is a national research professor and a renowned advocate for "inclusive innovation." With decades of experience leading one of India\'s largest research organizations, he is passionate about helping young minds turn their scientific ideas into impactful ventures.' },
         { id: 2, name: 'Kiran Karnik', email: 'kiran@mentor.com', headline: 'Former President, NASSCOM', industry: 'IT & Policy', expertise: ['IT Professionals', 'Startups', 'Policy'], quote: 'Guiding the next generation of IT leaders.', image: 'https://www.apnic.net/wp-content/uploads/2015/08/kiran-karnik.jpg', joinedDate: '2025-07-22', about: 'Kiran Karnik played a pivotal role in shaping India\'s IT industry. He offers invaluable insights into technology trends, policy-making, and scaling technology businesses.' },
@@ -36,6 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const viewSessionsBtn = document.getElementById('view-sessions-btn');
     const backToDashboardBtns = document.querySelectorAll('.back-to-dashboard-btn');
     const backToFindMentorBtn = document.querySelector('.back-to-find-mentor-btn');
+    const manageProfileBtn = document.getElementById('manage-profile-btn');
+    const viewRequestsBtn = document.getElementById('view-requests-btn');
+    const viewScheduleBtn = document.getElementById('view-schedule-btn');
 
     // Modals
     const roleChoiceModal = document.getElementById('role-choice-modal');
@@ -61,10 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileWelcomeMessage = document.getElementById('mobile-welcome-message');
     const dashboardWelcome = document.getElementById('dashboard-welcome');
     const mentorDashboardWelcome = document.getElementById('mentor-dashboard-welcome');
-    const mentorDashboardDate = document.getElementById('mentor-dashboard-date');
-    const mentorImmediateActions = document.getElementById('mentor-immediate-actions');
-    const mentorUpcomingSessionsList = document.getElementById('mentor-upcoming-sessions-list');
-
+    
     // Profile Page Elements
     const profileCompletionText = document.getElementById('profile-completion-text');
     const profileCompletionBar = document.getElementById('profile-completion-bar');
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Find Mentor Page Elements
     const findMentorGrid = document.getElementById('find-mentor-grid');
+    const guestMentorGrid = document.getElementById('guest-mentor-grid');
     const mentorResultsCount = document.getElementById('mentor-results-count');
     const industryFilters = document.getElementById('industry-filters');
     const expertiseFilters = document.getElementById('expertise-filters');
@@ -269,12 +271,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             const email = prompt("Please enter your email to reset your password:");
             if(email) {
-                const users = JSON.parse(localStorage.getItem('legacyLearnersUsers')) || [];
-                if (users.some(user => user.email === email.trim())) {
-                    showMessage(`If an account with ${email} exists, a reset link has been sent.`);
-                } else {
-                     showMessage(`No account found with the email ${email}.`);
-                }
+                // This would be a call to a backend endpoint in a real app
+                showMessage(`If an account with ${email} exists, a password reset link has been sent.`);
             }
         }, 350);
     });
@@ -290,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Dashboard navigation
     goToProfileBtn.addEventListener('click', () => showView('profile-content'));
     findMentorBtn.addEventListener('click', () => {
-        renderMentors(allMentors);
+        renderMentors(allMentors, findMentorGrid);
         showView('find-mentor-page-content');
     });
     viewSessionsBtn.addEventListener('click', () => {
@@ -307,6 +305,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     backToFindMentorBtn.addEventListener('click', () => showView('find-mentor-page-content'));
+    manageProfileBtn.addEventListener('click', () => showView('profile-content'));
+    viewRequestsBtn.addEventListener('click', () => {
+        renderMySessions();
+        sessionsTabs.querySelector('button[data-tab="pending"]').click();
+        showView('sessions-content');
+    });
+    viewScheduleBtn.addEventListener('click', () => {
+        renderMySessions();
+        sessionsTabs.querySelector('button[data-tab="upcoming"]').click();
+        showView('sessions-content');
+    });
+
 
     // --- Real-time Profile Completion Update ---
     const handleProfileFormChange = () => {
@@ -470,15 +480,15 @@ document.addEventListener('DOMContentLoaded', function() {
         showView('mentor-profile-content');
     };
 
-    const renderMentors = (mentors) => {
-        findMentorGrid.innerHTML = '';
+    const renderMentors = (mentors, gridElement) => {
+        gridElement.innerHTML = '';
         if (mentors.length === 0) {
-            findMentorGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No mentors found matching your criteria.</p>`;
-            mentorResultsCount.textContent = '0 Mentors Found';
+            gridElement.innerHTML = `<p class="col-span-full text-center text-gray-500">No mentors found.</p>`;
+            if(mentorResultsCount) mentorResultsCount.textContent = '0 Mentors Found';
             return;
         }
 
-        mentorResultsCount.textContent = `${mentors.length} Mentor${mentors.length > 1 ? 's' : ''} Found`;
+        if(mentorResultsCount) mentorResultsCount.textContent = `${mentors.length} Mentor${mentors.length > 1 ? 's' : ''} Found`;
 
         mentors.forEach(mentor => {
             const card = document.createElement('div');
@@ -501,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-            findMentorGrid.appendChild(card);
+            gridElement.appendChild(card);
         });
     };
 
@@ -550,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
             filteredMentors.sort((a, b) => new Date(b.joinedDate) - new Date(a.joinedDate));
         }
 
-        renderMentors(filteredMentors);
+        renderMentors(filteredMentors, findMentorGrid);
     };
 
     const populateFilters = () => {
@@ -706,67 +716,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const renderMentorDashboard = () => {
         const firstName = currentUser.name.split(' ')[0];
-        mentorDashboardWelcome.textContent = `Good Morning, ${firstName}! Welcome to your Dashboard.`;
-        mentorDashboardDate.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
+        mentorDashboardWelcome.textContent = `Welcome to your Dashboard, ${firstName}!`;
+        
         const sessions = JSON.parse(localStorage.getItem('legacyLearnersSessions')) || [];
         const myMentorId = allMentors.find(m => m.email === currentUser.email)?.id;
         if (!myMentorId) return;
 
         const pendingRequests = sessions.filter(s => s.mentorId === myMentorId && s.status === 'Pending');
-        const upcomingToday = sessions.filter(s => {
-            const sessionDate = new Date(s.slot);
-            const today = new Date();
-            return s.mentorId === myMentorId && s.status === 'Confirmed' &&
-                   sessionDate.getDate() === today.getDate() &&
-                   sessionDate.getMonth() === today.getMonth() &&
-                   sessionDate.getFullYear() === today.getFullYear();
-        });
-
-        // Immediate Actions
-        mentorImmediateActions.innerHTML = `
-            <div class="space-y-3">
-                <p>You have ${pendingRequests.length} new mentee requests.</p>
-                <button class="view-requests-btn card-btn card-btn-primary">View Requests</button>
-                <hr class="my-4">
-                <p>You have ${upcomingToday.length} upcoming session${upcomingToday.length !== 1 ? 's' : ''} today.</p>
-                <button class="view-schedule-btn card-btn card-btn-primary">View Schedule</button>
-            </div>
-        `;
-
-        // Upcoming Sessions List
-        const nextSessions = sessions.filter(s => s.mentorId === myMentorId && s.status === 'Confirmed' && new Date(s.slot) > new Date()).slice(0, 2);
-        if (nextSessions.length > 0) {
-            mentorUpcomingSessionsList.innerHTML = nextSessions.map(session => {
-                const users = JSON.parse(localStorage.getItem('legacyLearnersUsers')) || [];
-                const mentee = users.find(u => u.email === session.menteeId);
-                const sessionDate = new Date(session.slot);
-                return `
-                    <div class="flex items-center justify-between p-2 border-b">
-                        <div class="flex items-center gap-3">
-                            <img src="https://placehold.co/40x40/d4d4d4/ffffff?text=${mentee.name.charAt(0)}" alt="${mentee.name}" class="w-10 h-10 rounded-full">
-                            <span>${mentee.name}</span>
-                        </div>
-                        <span>${sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} @ ${sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
-                        <button class="card-btn card-btn-secondary">Join Call</button>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            mentorUpcomingSessionsList.innerHTML = `<p class="text-gray-500">No upcoming sessions.</p>`;
-        }
+        
+        viewRequestsBtn.textContent = `View Requests (${pendingRequests.length} New)`;
     };
 
     document.body.addEventListener('click', (e) => {
-        if (e.target.classList.contains('view-requests-btn')) {
-            renderMySessions();
-            sessionsTabs.querySelector('button[data-tab="pending"]').click();
-            showView('sessions-content');
-        }
-        if (e.target.classList.contains('view-schedule-btn')) {
-            renderMySessions();
-            sessionsTabs.querySelector('button[data-tab="upcoming"]').click();
-            showView('sessions-content');
+        if (e.target.id === 'find-mentor-shortcut') {
+            renderMentors(allMentors, findMentorGrid);
+            showView('find-mentor-page-content');
         }
     });
     
@@ -774,14 +738,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function initialize() {
         populateGuidanceChecklist();
         populateFilters();
+        renderMentors(allMentors, guestMentorGrid);
         const savedUser = localStorage.getItem('legacyLearnersCurrentUser');
         if (savedUser) {
             updateUIForLogin(JSON.parse(savedUser));
         } else {
             updateUIForLogout();
         }
-        revealOnScroll();
-        window.addEventListener('scroll', revealOnScroll);
     }
 
     initialize();
