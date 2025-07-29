@@ -1,3 +1,4 @@
+
 // script.js
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -5,18 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentUser = null;
     let userRole = 'learner'; // Default role
     let authAction = ''; // To track if user clicked 'login' or 'signup'
-  
-
-    // --- Sample Mentor Data (This will be replaced by data from your database) ---
-    const allMentors = [
-        { id: 1, name: 'Dr. R. A. Mashelkar', email: 'ramesh@mentor.com', headline: 'Former Director General of CSIR', industry: 'Science & Innovation', expertise: ['Innovation', 'Startups', 'Leadership'], quote: 'Mentoring young innovators to build a better tomorrow.', image: 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Ramesh_Mashelkar_Apr09.jpg', joinedDate: '2025-07-20', about: 'Dr. Mashelkar is a national research professor and a renowned advocate for "inclusive innovation." With decades of experience leading one of India\'s largest research organizations, he is passionate about helping young minds turn their scientific ideas into impactful ventures.' },
-        { id: 2, name: 'Kiran Karnik', email: 'kiran@mentor.com', headline: 'Former President, NASSCOM', industry: 'IT & Policy', expertise: ['IT Professionals', 'Startups', 'Policy'], quote: 'Guiding the next generation of IT leaders.', image: 'https://www.apnic.net/wp-content/uploads/2015/08/kiran-karnik.jpg', joinedDate: '2025-07-22', about: 'Kiran Karnik played a pivotal role in shaping India\'s IT industry. He offers invaluable insights into technology trends, policy-making, and scaling technology businesses.' },
-        { id: 3, name: 'Ravi Venkatesan', email: 'ravi@mentor.com', headline: 'Former Chairman, Microsoft India', industry: 'Business Strategy', expertise: ['Social Entrepreneurs', 'Business Development', 'Leadership'], quote: 'Helping social entrepreneurs make a global impact.', image: 'https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2018/02/01/Photos/Processed/RaviVenkatesan-kI3F--621x414@LiveMint.jpg', joinedDate: '2025-07-15', about: 'Ravi Venkatesan is a business leader with a deep commitment to social change. He specializes in mentoring entrepreneurs who are building organizations that aim to solve critical societal challenges.' },
-        { id: 4, name: 'Dr. Devi Shetty', email: 'devi@mentor.com', headline: 'Founder, Narayana Health', industry: 'Healthcare', expertise: ['Healthcare Innovation', 'Entrepreneurship', 'Low-cost Solutions'], quote: 'Promoting innovation in affordable healthcare.', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Devi_Shetty.jpg/800px-Devi_Shetty.jpg', joinedDate: '2025-07-25', about: 'A world-renowned cardiac surgeon, Dr. Devi Shetty is a pioneer in making high-quality healthcare accessible. He is eager to mentor health-tech innovators and entrepreneurs looking to disrupt the medical field.' },
-        { id: 5, name: 'Arun Maira', email: 'arun@mentor.com', headline: 'Former Member, Planning Commission', industry: 'Policy & Strategy', expertise: ['Policy', 'Strategy', 'Leadership'], quote: 'Shaping future leaders through policy and strategic thinking.', image: 'https://placehold.co/400x400/a3a3a3/ffffff?text=Arun+Maira', joinedDate: '2025-06-30', about: 'Arun Maira has extensive experience in both the corporate world and public policy. He provides guidance on systems thinking, leadership, and navigating complex institutional challenges.' },
-        { id: 6, name: 'Prof. Deepak B. Phatak', email: 'deepak@mentor.com', headline: 'Professor (Retired), IIT Bombay', industry: 'Education Technology', expertise: ['EdTech', 'Computer Science', 'MOOCs'], quote: 'Leveraging technology for national education.', image: 'https://placehold.co/400x400/d4d4d4/ffffff?text=Prof.+Phatak', joinedDate: '2025-07-24', about: 'A stalwart of computer science education in India, Prof. Phatak has been instrumental in large-scale educational technology projects. He mentors those passionate about using tech to solve educational challenges.' },
-    ];
-
+    let allMentors = []; // Will be populated from database
 
     // --- Element Selectors ---
     const allViews = document.querySelectorAll('main');
@@ -97,6 +87,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const pendingSessionsContent = document.getElementById('pending-sessions-content');
     const pastSessionsContent = document.getElementById('past-sessions-content');
 
+    // --- API Functions ---
+    const apiCall = async (url, options = {}) => {
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'API call failed');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
+        }
+    };
+
+    const loadMentors = async () => {
+        try {
+            allMentors = await apiCall('/api/mentors');
+            // Convert database format to expected format
+            allMentors = allMentors.map(mentor => ({
+                id: mentor.id,
+                name: mentor.name,
+                email: mentor.email,
+                headline: mentor.headline || 'Professional Mentor',
+                industry: mentor.industry || 'General',
+                expertise: mentor.expertise ? mentor.expertise.split(',').map(e => e.trim()) : ['Mentoring'],
+                quote: mentor.quote || 'Sharing knowledge and experience.',
+                image: mentor.image || 'https://placehold.co/400x400/a3a3a3/ffffff?text=' + encodeURIComponent(mentor.name || 'Mentor'),
+                joinedDate: mentor.joined_date,
+                about: mentor.about || 'Experienced professional ready to mentor.'
+            }));
+        } catch (error) {
+            console.error('Failed to load mentors:', error);
+            allMentors = [];
+        }
+    };
 
     // --- View Management ---
     const showView = (viewId) => {
@@ -164,20 +198,34 @@ document.addEventListener('DOMContentLoaded', function() {
             showView('dashboard-content');
         }
         
+        // Populate profile fields
         profileName.value = user.name || '';
-        profileHeadline.value = user.profile.headline || '';
-        profileLocation.value = user.profile.location || '';
-        profileFocus.value = user.profile.focus || '';
-        profileInterests.value = (user.profile.interests || []).join(', ');
-        profileGoals.value = user.profile.goals || '';
-        profileEducation.value = user.profile.education || '';
-        profileSkills.value = (user.profile.skills || []).join(', ');
-        profileExpectations.value = user.profile.expectations || '';
+        profileHeadline.value = user.headline || '';
+        profileLocation.value = user.location || '';
+        profileFocus.value = user.focus || '';
+        profileInterests.value = user.interests || '';
+        profileGoals.value = user.goals || '';
+        profileEducation.value = user.education || '';
+        profileSkills.value = user.skills || '';
+        profileExpectations.value = user.expectations || '';
         
+        const guidanceArray = user.guidance ? user.guidance.split(',').map(g => g.trim()) : [];
         const guidanceCheckboxes = profileGuidanceChecklist.querySelectorAll('input[type="checkbox"]');
         guidanceCheckboxes.forEach(checkbox => {
-            checkbox.checked = (user.profile.guidance || []).includes(checkbox.value);
+            checkbox.checked = guidanceArray.includes(checkbox.value);
         });
+        
+        // Create profile object for completion calculation
+        user.profile = {
+            headline: user.headline,
+            location: user.location,
+            focus: user.focus,
+            interests: user.interests ? user.interests.split(',').map(i => i.trim()) : [],
+            goals: user.goals,
+            education: user.education,
+            skills: user.skills ? user.skills.split(',').map(s => s.trim()) : [],
+            expectations: user.expectations
+        };
         
         updateProfileCompletion(user);
     };
@@ -271,7 +319,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             const email = prompt("Please enter your email to reset your password:");
             if(email) {
-                // This would be a call to a backend endpoint in a real app
                 showMessage(`If an account with ${email} exists, a password reset link has been sent.`);
             }
         }, 350);
@@ -317,7 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showView('sessions-content');
     });
 
-
     // --- Real-time Profile Completion Update ---
     const handleProfileFormChange = () => {
         const tempUser = {
@@ -336,9 +382,8 @@ document.addEventListener('DOMContentLoaded', function() {
     profileForm.addEventListener('input', handleProfileFormChange);
     profileForm.addEventListener('change', handleProfileFormChange);
 
-
     // --- Form Submission Logic ---
-    signupForm.addEventListener('submit', (e) => {
+    signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = document.getElementById('signup-username').value.trim();
         const name = document.getElementById('signup-name').value.trim();
@@ -348,76 +393,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (password !== confirmPassword) return showMessage('Passwords do not match.');
 
-        const users = JSON.parse(localStorage.getItem('legacyLearnersUsers')) || [];
+        try {
+            await apiCall('/api/register', {
+                method: 'POST',
+                body: JSON.stringify({ username, name, email, password, role: userRole })
+            });
 
-        if (users.find(user => user.email === email)) return showMessage('An account with this email already exists.');
-        if (users.find(user => user.username === username)) return showMessage('This username is already taken.');
-
-        const newUser = { 
-            name, username, email, password, role: userRole,
-            profile: {
-                headline: '', location: '', focus: '', interests: [],
-                guidance: [], goals: '', education: '', skills: [], expectations: ''
-            }
-        };
-        users.push(newUser);
-        localStorage.setItem('legacyLearnersUsers', JSON.stringify(users));
-        
-        closeModal(signupModal);
-        signupForm.reset();
-        showMessage('Account created! Please log in.', () => {
-            document.getElementById('login-title').textContent = `Log In as a ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
-            openModal(loginModal)
-        });
+            closeModal(signupModal);
+            signupForm.reset();
+            showMessage('Account created! Please log in.', () => {
+                document.getElementById('login-title').textContent = `Log In as a ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
+                openModal(loginModal);
+            });
+        } catch (error) {
+            showMessage(error.message);
+        }
     });
 
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const identifier = document.getElementById('login-identifier').value.trim();
         const password = document.getElementById('login-password').value;
-        const users = JSON.parse(localStorage.getItem('legacyLearnersUsers')) || [];
-        const user = users.find(u => (u.email === identifier || u.username === identifier) && u.password === password && u.role === userRole);
 
-        if (user) {
+        try {
+            const response = await apiCall('/api/login', {
+                method: 'POST',
+                body: JSON.stringify({ identifier, password, role: userRole })
+            });
+
             closeModal(loginModal);
             loginForm.reset();
-            updateUIForLogin(user);
-        } else {
-            showMessage(`Invalid credentials for a ${userRole}. Please try again or check your role.`);
+            updateUIForLogin(response.user);
+        } catch (error) {
+            showMessage(error.message);
         }
     });
     
-    profileForm.addEventListener('submit', (e) => {
+    profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!currentUser) return;
 
-        currentUser.name = profileName.value;
-        currentUser.profile.headline = profileHeadline.value;
-        currentUser.profile.location = profileLocation.value;
-        currentUser.profile.focus = profileFocus.value;
-        currentUser.profile.interests = profileInterests.value.split(',').map(s => s.trim()).filter(Boolean);
-        currentUser.profile.goals = profileGoals.value;
-        currentUser.profile.education = profileEducation.value;
-        currentUser.profile.skills = profileSkills.value.split(',').map(s => s.trim()).filter(Boolean);
-        currentUser.profile.expectations = profileExpectations.value;
-        
         const selectedGuidance = [];
         profileGuidanceChecklist.querySelectorAll('input:checked').forEach(cb => selectedGuidance.push(cb.value));
-        currentUser.profile.guidance = selectedGuidance;
-        
-        const users = JSON.parse(localStorage.getItem('legacyLearnersUsers')) || [];
-        const userIndex = users.findIndex(u => u.email === currentUser.email);
-        if (userIndex !== -1) {
-            users[userIndex] = currentUser;
-            localStorage.setItem('legacyLearnersUsers', JSON.stringify(users));
+
+        const profileData = {
+            name: profileName.value,
+            headline: profileHeadline.value,
+            location: profileLocation.value,
+            focus: profileFocus.value,
+            interests: profileInterests.value,
+            guidance: selectedGuidance.join(', '),
+            goals: profileGoals.value,
+            education: profileEducation.value,
+            skills: profileSkills.value,
+            expectations: profileExpectations.value
+        };
+
+        try {
+            await apiCall(`/api/profile/${currentUser.user_id || currentUser.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(profileData)
+            });
+
+            // Update current user object
+            Object.assign(currentUser, profileData);
+            localStorage.setItem('legacyLearnersCurrentUser', JSON.stringify(currentUser));
+            
+            showMessage('Profile updated successfully!');
+        } catch (error) {
+            showMessage('Failed to update profile: ' + error.message);
         }
-        
-        localStorage.setItem('legacyLearnersCurrentUser', JSON.stringify(currentUser));
-        updateProfileCompletion(currentUser);
-        showMessage('Profile updated successfully!');
     });
     
-    bookSessionForm.addEventListener('submit', (e) => {
+    bookSessionForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const selectedSlot = bookSessionForm.querySelector('input[name="time-slot"]:checked');
         if (!selectedSlot) {
@@ -427,24 +475,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const mentorId = parseInt(bookSessionForm.dataset.mentorId);
         const mentor = allMentors.find(m => m.id === mentorId);
-        
-        const sessions = JSON.parse(localStorage.getItem('legacyLearnersSessions')) || [];
-        const newSession = {
-            sessionId: Date.now(),
-            mentorId: mentor.id,
-            menteeId: currentUser.email,
-            slot: selectedSlot.value,
-            status: 'Pending'
-        };
-        sessions.push(newSession);
-        localStorage.setItem('legacyLearnersSessions', JSON.stringify(sessions));
 
-        closeModal(bookSessionModal);
-        showMessage(`Your session request has been sent to ${mentor.name}! For more details and updates, go to 'My Sessions' on your dashboard.`, () => {
-            renderMySessions();
-            showView('sessions-content');
-        });
-        bookSessionForm.reset();
+        try {
+            await apiCall('/api/sessions', {
+                method: 'POST',
+                body: JSON.stringify({
+                    mentorId: mentor.id,
+                    menteeId: currentUser.user_id || currentUser.id,
+                    slot: selectedSlot.value
+                })
+            });
+
+            closeModal(bookSessionModal);
+            showMessage(`Your session request has been sent to ${mentor.name}! For more details and updates, go to 'My Sessions' on your dashboard.`, () => {
+                renderMySessions();
+                showView('sessions-content');
+            });
+            bookSessionForm.reset();
+        } catch (error) {
+            showMessage('Failed to book session: ' + error.message);
+        }
     });
 
     // --- Find Mentor Page Logic ---
@@ -614,86 +664,88 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
     
-    const renderMySessions = () => {
-        const sessions = JSON.parse(localStorage.getItem('legacyLearnersSessions')) || [];
-        const mySessions = sessions.filter(s => s.menteeId === currentUser.email);
-        const now = new Date();
+    const renderMySessions = async () => {
+        if (!currentUser) return;
+        
+        try {
+            const sessions = await apiCall(`/api/sessions/${currentUser.user_id || currentUser.id}`);
+            const now = new Date();
 
-        const upcoming = mySessions.filter(s => s.status === 'Confirmed' && new Date(s.slot) > now);
-        const pending = mySessions.filter(s => s.status === 'Pending');
-        const past = mySessions.filter(s => new Date(s.slot) <= now);
+            const upcoming = sessions.filter(s => s.status === 'Confirmed' && new Date(s.slot) > now);
+            const pending = sessions.filter(s => s.status === 'Pending');
+            const past = sessions.filter(s => new Date(s.slot) <= now);
 
-        // Render Upcoming
-        if (upcoming.length === 0) {
-            upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions. Time to find a mentor!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
-        } else {
-            upcomingSessionsContent.innerHTML = upcoming.map(session => {
-                const mentor = allMentors.find(m => m.id === session.mentorId);
-                const sessionDate = new Date(session.slot);
-                const formattedDate = sessionDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                const formattedTime = sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-                return `
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <div class="flex flex-col sm:flex-row gap-6">
-                            <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
-                            <div>
-                                <h3 class="text-2xl font-bold">Session with ${mentor.name}</h3>
-                                <p class="text-gray-700 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
-                                <div class="mt-4 flex flex-wrap gap-2">
-                                    <button class="card-btn card-btn-primary">Join Call</button>
-                                    <button class="card-btn card-btn-secondary">Reschedule</button>
-                                    <button class="card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
+            // Render Upcoming
+            if (upcoming.length === 0) {
+                upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions. Time to find a mentor!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
+            } else {
+                upcomingSessionsContent.innerHTML = upcoming.map(session => {
+                    const sessionDate = new Date(session.slot);
+                    const formattedDate = sessionDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    const formattedTime = sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex flex-col sm:flex-row gap-6">
+                                <img src="${session.mentor_image || 'https://placehold.co/96x96/a3a3a3/ffffff?text=M'}" alt="${session.mentor_name}" class="w-24 h-24 rounded-full object-cover">
+                                <div>
+                                    <h3 class="text-2xl font-bold">Session with ${session.mentor_name}</h3>
+                                    <p class="text-gray-700 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        <button class="card-btn card-btn-primary">Join Call</button>
+                                        <button class="card-btn card-btn-secondary">Reschedule</button>
+                                        <button class="card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
-        }
+                    `;
+                }).join('');
+            }
 
-        // Render Pending
-        if (pending.length === 0) {
-            pendingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no pending session requests.</p></div>`;
-        } else {
-            pendingSessionsContent.innerHTML = pending.map(session => {
-                const mentor = allMentors.find(m => m.id === session.mentorId);
-                return `
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <div class="flex items-center gap-6">
-                            <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
-                            <div>
-                                <h3 class="text-xl font-bold">Request sent to ${mentor.name}</h3>
-                                <p class="text-gray-500">Awaiting response for session on ${new Date(session.slot).toLocaleDateString()}</p>
-                                <button class="mt-2 text-red-500 hover:underline text-sm">Withdraw Request</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Render Past
-        if (past.length === 0) {
-            pastSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no past sessions.</p></div>`;
-        } else {
-            pastSessionsContent.innerHTML = past.map(session => {
-                const mentor = allMentors.find(m => m.id === session.mentorId);
-                return `
-                    <div class="bg-white p-6 rounded-lg shadow-md opacity-70">
-                        <div class="flex items-center gap-6">
-                            <img src="${mentor.image}" alt="${mentor.name}" class="w-24 h-24 rounded-full object-cover">
-                            <div>
-                                <h3 class="text-xl font-bold">Session with ${mentor.name}</h3>
-                                <p class="text-gray-500">Completed on ${new Date(session.slot).toLocaleDateString()}</p>
-                                <div class="mt-2 flex gap-2">
-                                    <button class="card-btn card-btn-secondary">Leave a Review</button>
-                                    <button class="card-btn card-btn-secondary">Schedule Follow-up</button>
+            // Render Pending
+            if (pending.length === 0) {
+                pendingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no pending session requests.</p></div>`;
+            } else {
+                pendingSessionsContent.innerHTML = pending.map(session => {
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex items-center gap-6">
+                                <img src="${session.mentor_image || 'https://placehold.co/96x96/a3a3a3/ffffff?text=M'}" alt="${session.mentor_name}" class="w-24 h-24 rounded-full object-cover">
+                                <div>
+                                    <h3 class="text-xl font-bold">Request sent to ${session.mentor_name}</h3>
+                                    <p class="text-gray-500">Awaiting response for session on ${new Date(session.slot).toLocaleDateString()}</p>
+                                    <button class="mt-2 text-red-500 hover:underline text-sm">Withdraw Request</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            }
+
+            // Render Past
+            if (past.length === 0) {
+                pastSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no past sessions.</p></div>`;
+            } else {
+                pastSessionsContent.innerHTML = past.map(session => {
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow-md opacity-70">
+                            <div class="flex items-center gap-6">
+                                <img src="${session.mentor_image || 'https://placehold.co/96x96/a3a3a3/ffffff?text=M'}" alt="${session.mentor_name}" class="w-24 h-24 rounded-full object-cover">
+                                <div>
+                                    <h3 class="text-xl font-bold">Session with ${session.mentor_name}</h3>
+                                    <p class="text-gray-500">Completed on ${new Date(session.slot).toLocaleDateString()}</p>
+                                    <div class="mt-2 flex gap-2">
+                                        <button class="card-btn card-btn-secondary">Leave a Review</button>
+                                        <button class="card-btn card-btn-secondary">Schedule Follow-up</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (error) {
+            console.error('Failed to load sessions:', error);
         }
     };
     
@@ -714,17 +766,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const renderMentorDashboard = () => {
+    const renderMentorDashboard = async () => {
         const firstName = currentUser.name.split(' ')[0];
         mentorDashboardWelcome.textContent = `Welcome to your Dashboard, ${firstName}!`;
         
-        const sessions = JSON.parse(localStorage.getItem('legacyLearnersSessions')) || [];
-        const myMentorId = allMentors.find(m => m.email === currentUser.email)?.id;
-        if (!myMentorId) return;
-
-        const pendingRequests = sessions.filter(s => s.mentorId === myMentorId && s.status === 'Pending');
-        
-        viewRequestsBtn.textContent = `View Requests (${pendingRequests.length} New)`;
+        try {
+            const sessions = await apiCall(`/api/sessions/${currentUser.user_id || currentUser.id}`);
+            const pendingRequests = sessions.filter(s => s.status === 'Pending');
+            viewRequestsBtn.textContent = `View Requests (${pendingRequests.length} New)`;
+        } catch (error) {
+            console.error('Failed to load mentor dashboard data:', error);
+        }
     };
 
     document.body.addEventListener('click', (e) => {
@@ -735,10 +787,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // --- Initial Setup ---
-    function initialize() {
+    async function initialize() {
         populateGuidanceChecklist();
+        await loadMentors();
         populateFilters();
         renderMentors(allMentors, guestMentorGrid);
+        
         const savedUser = localStorage.getItem('legacyLearnersCurrentUser');
         if (savedUser) {
             updateUIForLogin(JSON.parse(savedUser));
