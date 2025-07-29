@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legacy Learners - Bridging Generations</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="mentor.css">
 
-    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-    <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-2xl font-bold text-gray-800">
@@ -43,13 +38,11 @@
                         <a href="#" id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">Log Out</a>
                     </div>
                 </div>
-                <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-indigo-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </div>
         </nav>
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden px-4 sm:px-6 pb-4 border-t">
             <div id="mobile-main-nav" class="mt-4 space-y-2">
                 <a href="#mission" class="block py-2 text-gray-600 hover:text-indigo-600">Our Mission</a>
@@ -67,9 +60,7 @@
         </div>
     </header>
 
-    <!-- Main Content for guests -->
     <main id="guest-content">
-        <!-- Hero Section -->
         <section class="hero-bg py-20 md:py-32">
             <div class="container mx-auto px-4 sm:px-6 text-center">
                 <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-4">Experience Meets Ambition.</h1>
@@ -78,7 +69,6 @@
             </div>
         </section>
 
-        <!-- Mission Section -->
         <section id="mission" class="py-16 md:py-20">
             <div class="container mx-auto px-4 sm:px-6 text-center">
                 <h2 class="text-3xl font-bold mb-2">Our Mission</h2>
@@ -87,7 +77,6 @@
             </div>
         </section>
         
-        <!-- How It Works Section -->
         <section id="how-it-works" class="bg-white py-16 md:py-20">
             <div class="container mx-auto px-4 sm:px-6">
                 <h2 class="text-3xl font-bold text-center mb-12">Get Started in 3 Easy Steps</h2>
@@ -111,49 +100,14 @@
             </div>
         </section>
 
-        <!-- Why Legacy Learners Section -->
-        <section id="why-us" class="py-16 md:py-20">
-            <div class="container mx-auto px-4 sm:px-6">
-                <h2 class="text-3xl font-bold text-center mb-12">Why LegacyLearners?</h2>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
-                    <div class="md:col-span-2 space-y-8">
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-2">🧠</span> Real-World Wisdom</h3>
-                            <p class="text-gray-600">Go beyond textbooks. Our mentors provide invaluable insights from decades of hands-on experience, offering practical guidance you can't find in a classroom.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-2">🤝</span> Meaningful Connections</h3>
-                            <p class="text-gray-600">LegacyLearners is more than just a platform; it's a community. We foster genuine relationships built on mutual respect, understanding, and a shared desire to learn and grow.</p>
-                        </div>
-                    </div>
-                    <div class="md:col-span-1 flex justify-center">
-                        <img src="https://placehold.co/400x600/E0E7FF/4F46E5?text=Legacy+Learners" alt="Illustration of a mentor and mentee" class="rounded-lg max-w-full h-auto">
-                    </div>
-                    <div class="md:col-span-2 space-y-8">
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-2">🧭</span> Personalized Guidance</h3>
-                            <p class="text-gray-600">Forget one-size-fits-all solutions. Receive one-on-one mentorship tailored specifically to your personal career goals, challenges, and aspirations.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-xl font-bold mb-2 flex items-center"><span class="text-2xl mr-2">🌱</span> Shared Growth & Purpose</h3>
-                            <p class="text-gray-600">Mentees gain direction and confidence for their future. Mentors find a fulfilling new purpose in sharing their legacy and empowering the next generation of leaders.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Featured Mentors Section -->
-        <section id="mentors" class="py-16 md:py-20 bg-white">
+        <section id="mentors" class="py-16 md:py-20">
             <div class="container mx-auto px-4 sm:px-6">
                 <h2 class="text-3xl font-bold text-center mb-12">Meet Some of Our Mentors</h2>
                 <div id="guest-mentor-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Mentor cards will be dynamically inserted here -->
                 </div>
             </div>
         </section>
         
-        <!-- CTA Section -->
         <section id="cta-section" class="bg-indigo-600">
             <div class="container mx-auto px-4 sm:px-6 py-20 text-center">
                 <h2 class="text-3xl font-bold text-white mb-4">Ready to Share or Eager to Learn?</h2>
@@ -163,25 +117,21 @@
         </section>
     </main>
 
-    <!-- Learner Dashboard -->
     <main id="dashboard-content" class="hidden">
         <div class="container mx-auto px-4 sm:px-6 py-12">
             <h1 id="dashboard-welcome" class="text-3xl md:text-4xl font-bold mb-8"></h1>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Dashboard Card 1: My Profile -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4">My Profile</h2>
                     <p class="text-gray-600">View and edit your personal information and mentorship preferences.</p>
                     <button id="go-to-profile-btn" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Go to Profile</button>
                 </div>
-                <!-- Dashboard Card 2: Find Mentors -->
-                 <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4">Find a Mentor</h2>
                     <p class="text-gray-600">Search our network of experienced professionals to find your perfect match.</p>
                     <button id="find-mentor-btn" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Browse Mentors</button>
                 </div>
-                <!-- Dashboard Card 3: My Sessions -->
-                 <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4">My Sessions</h2>
                     <p class="text-gray-600">Check your upcoming scheduled sessions and review past meetings.</p>
                     <button id="view-sessions-btn" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">View Sessions</button>
@@ -190,24 +140,20 @@
         </div>
     </main>
     
-    <!-- Mentor Dashboard -->
     <main id="mentor-dashboard-content" class="hidden">
         <div class="container mx-auto px-4 sm:px-6 py-12">
             <h1 id="mentor-dashboard-welcome" class="text-3xl md:text-4xl font-bold mb-8"></h1>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Card 1: My Profile & Availability -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4">My Profile & Availability</h2>
                     <p class="text-gray-600 mb-4">Manage your professional profile and set your mentorship availability.</p>
                     <button id="manage-profile-btn" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Manage Profile</button>
                 </div>
-                <!-- Card 2: My Mentees & Requests -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4">My Mentees & Requests</h2>
                     <p class="text-gray-600 mb-4">View incoming mentee requests and manage your active mentees.</p>
                     <button id="view-requests-btn" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">View Requests</button>
                 </div>
-                <!-- Card 3: My Schedule & Sessions -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4">My Schedule & Sessions</h2>
                     <p class="text-gray-600 mb-4">Check your upcoming scheduled sessions and review past meetings.</p>
@@ -217,13 +163,11 @@
         </div>
     </main>
 
-    <!-- Profile Page -->
     <main id="profile-content" class="hidden">
         <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
             <h1 class="text-3xl md:text-4xl font-bold mb-4">My Profile</h1>
             
-            <!-- Profile Completion Bar -->
             <div class="mb-8">
                 <div class="flex justify-between mb-1">
                     <span class="text-base font-medium text-indigo-700">Profile Completion</span>
@@ -235,7 +179,6 @@
             </div>
 
             <form id="profile-form" class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto space-y-8">
-                <!-- Section 1: The Essentials -->
                 <div class="border-b pb-6">
                     <h2 class="text-2xl font-bold mb-4">The Essentials</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -245,65 +188,95 @@
                         </div>
                         <div>
                             <label for="profile-headline" class="block text-sm font-medium text-gray-700 mb-1">Headline <span class="text-red-500">*</span></label>
-                            <input type="text" id="profile-headline" placeholder="e.g., Computer Science Student" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                            <input type="text" id="profile-headline" placeholder="e.g., Computer Science Student or Retired Engineer" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
                         </div>
                         <div>
                             <label for="profile-location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
                             <input type="text" id="profile-location" placeholder="e.g., Faridabad, India" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                         </div>
+                        <div id="mentor-link-field-container" class="hidden">
+                           <label for="profile-meet-link" class="block text-sm font-medium text-gray-700 mb-1">Personal Meeting Link</label>
+                           <input type="url" id="profile-meet-link" placeholder="https://meet.google.com/abc-defg-hij" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                           <p class="text-xs text-gray-500 mt-1">Your static meeting link for all sessions (e.g., from Google Meet, Zoom).</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Section 2: My Goals & Aspirations -->
-                <div class="border-b pb-6">
-                    <h2 class="text-2xl font-bold mb-4">My Goals & Aspirations</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="profile-focus" class="block text-sm font-medium text-gray-700 mb-1">My Current Focus <span class="text-red-500">*</span></label>
-                            <select id="profile-focus" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                                <option value="">Select...</option>
-                                <option>In High School</option>
-                                <option>Studying at University</option>
-                                <option>Recent Graduate</option>
-                                <option>Early Career Professional</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="profile-interests" class="block text-sm font-medium text-gray-700 mb-1">Fields of Interest <span class="text-red-500">*</span></label>
-                            <input type="text" id="profile-interests" placeholder="e.g., Technology, Healthcare, Arts" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">I'm Looking for Guidance On:</label>
-                            <div id="profile-guidance-checklist" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                <!-- Checklist items will be populated by JS -->
+                <div id="learner-profile-section" class="hidden space-y-8">
+                    <div class="border-b pb-6">
+                        <h2 class="text-2xl font-bold mb-4">My Goals & Aspirations</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="profile-focus" class="block text-sm font-medium text-gray-700 mb-1">My Current Focus <span class="text-red-500">*</span></label>
+                                <select id="profile-focus" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                                    <option value="">Select...</option>
+                                    <option>In High School</option>
+                                    <option>Studying at University</option>
+                                    <option>Recent Graduate</option>
+                                    <option>Early Career Professional</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="profile-interests" class="block text-sm font-medium text-gray-700 mb-1">Fields of Interest <span class="text-red-500">*</span></label>
+                                <input type="text" id="profile-interests" placeholder="e.g., Technology, Healthcare, Arts" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">I'm Looking for Guidance On:</label>
+                                <div id="profile-guidance-checklist" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="profile-goals" class="block text-sm font-medium text-gray-700 mb-1">My Goals (1-3 years)</label>
+                                <textarea id="profile-goals" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
                             </div>
                         </div>
-                        <div class="md:col-span-2">
-                            <label for="profile-goals" class="block text-sm font-medium text-gray-700 mb-1">My Goals (1-3 years)</label>
-                            <textarea id="profile-goals" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                    </div>
+                    <div class="border-b pb-6">
+                        <h2 class="text-2xl font-bold mb-4">My Background & Skills</h2>
+                        <div>
+                            <label for="profile-education" class="block text-sm font-medium text-gray-700 mb-1">Education</label>
+                            <input type="text" id="profile-education" placeholder="B.Tech in Computer Science, YMCA, 2026" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="mt-6">
+                            <label for="profile-skills" class="block text-sm font-medium text-gray-700 mb-1">My Skills & Strengths</label>
+                            <input type="text" id="profile-skills" placeholder="Python, Canva, Content Writing, Teamwork" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4">A Personal Touch</h2>
+                        <div>
+                            <label for="profile-expectations" class="block text-sm font-medium text-gray-700 mb-1">What I Hope to Learn from a Mentor</label>
+                            <textarea id="profile-expectations" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section 3: My Background & Skills -->
-                <div class="border-b pb-6">
-                    <h2 class="text-2xl font-bold mb-4">My Background & Skills</h2>
-                    <div>
-                        <label for="profile-education" class="block text-sm font-medium text-gray-700 mb-1">Education</label>
-                        <input type="text" id="profile-education" placeholder="B.Tech in Computer Science, YMCA, 2026" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                <div id="mentor-profile-section" class="hidden space-y-8">
+                    <div class="border-b pb-6">
+                        <h2 class="text-2xl font-bold mb-4">My Expertise</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="profile-industry" class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                                <input type="text" id="profile-industry" placeholder="e.g., Software Engineering" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                             <div>
+                                <label for="profile-expertise" class="block text-sm font-medium text-gray-700 mb-1">Areas of Expertise (comma-separated)</label>
+                                <input type="text" id="profile-expertise" placeholder="e.g., Java, Project Management, Leadership" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
                     </div>
-                    <div class="mt-6">
-                        <label for="profile-skills" class="block text-sm font-medium text-gray-700 mb-1">My Skills & Strengths</label>
-                        <input type="text" id="profile-skills" placeholder="Python, Canva, Content Writing, Teamwork" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                    </div>
-                </div>
-
-                <!-- Section 4: A Personal Touch -->
-                <div>
-                    <h2 class="text-2xl font-bold mb-4">A Personal Touch</h2>
                     <div>
-                        <label for="profile-expectations" class="block text-sm font-medium text-gray-700 mb-1">What I Hope to Learn from a Mentor</label>
-                        <textarea id="profile-expectations" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                        <h2 class="text-2xl font-bold mb-4">About Me</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <label for="profile-about" class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                                <textarea id="profile-about" rows="4" placeholder="Share a bit about your professional journey and what you enjoy mentoring." class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                            </div>
+                            <div>
+                                <label for="profile-quote" class="block text-sm font-medium text-gray-700 mb-1">Inspirational Quote</label>
+                                <input type="text" id="profile-quote" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -312,12 +285,10 @@
         </div>
     </main>
 
-    <!-- Find a Mentor Page -->
     <main id="find-mentor-page-content" class="hidden">
         <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
             <div class="flex flex-col md:flex-row gap-8">
-                <!-- Filters Sidebar -->
                 <aside class="w-full md:w-1/4">
                     <div class="bg-white p-6 rounded-lg shadow-md sticky top-28">
                         <h3 class="text-xl font-bold mb-4">Filters</h3>
@@ -329,19 +300,16 @@
                             <div>
                                 <h4 class="block text-sm font-medium text-gray-700 mb-2">Industry</h4>
                                 <div id="industry-filters" class="space-y-2">
-                                    <!-- Industry checkboxes populated by JS -->
                                 </div>
                             </div>
                             <div>
                                 <h4 class="block text-sm font-medium text-gray-700 mb-2">Expertise</h4>
                                 <div id="expertise-filters" class="space-y-2">
-                                    <!-- Expertise checkboxes populated by JS -->
                                 </div>
                             </div>
                         </form>
                     </div>
                 </aside>
-                <!-- Mentor Results -->
                 <div class="w-full md:w-3/4">
                     <div class="flex justify-between items-center mb-6">
                         <h2 id="mentor-results-count" class="text-2xl font-bold">Mentors</h2>
@@ -354,30 +322,26 @@
                         </div>
                     </div>
                     <div id="find-mentor-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                        <!-- Mentor cards will be dynamically inserted here -->
                     </div>
                 </div>
             </div>
         </div>
     </main>
+    
 
-    <!-- Mentor Profile Page -->
     <main id="mentor-profile-content" class="hidden">
         <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-find-mentor-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Search</button>
             <div id="mentor-profile-details" class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
-                <!-- Mentor details will be populated here by JS -->
             </div>
         </div>
     </main>
 
-    <!-- My Sessions Page -->
     <main id="sessions-content" class="hidden">
         <div class="container mx-auto px-4 sm:px-6 py-12">
             <button class="back-to-dashboard-btn mb-8 text-indigo-600 hover:underline">&larr; Back to Dashboard</button>
             <h1 class="text-3xl md:text-4xl font-bold mb-8">My Sessions</h1>
             
-            <!-- Tabs -->
             <div class="mb-4 border-b border-gray-200">
                 <ul id="sessions-tabs" class="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
                     <li class="mr-2" role="presentation">
@@ -392,7 +356,6 @@
                 </ul>
             </div>
 
-            <!-- Tab Content -->
             <div id="sessions-tab-content">
                 <div id="upcoming-sessions-content" class="space-y-6" role="tabpanel"></div>
                 <div id="pending-sessions-content" class="hidden space-y-6" role="tabpanel"></div>
@@ -401,7 +364,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white">
         <div class="container mx-auto px-6 py-12">
             <div class="grid md:grid-cols-3 gap-8">
@@ -419,7 +381,6 @@
                 </div>
                 <div>
                     <h4 class="font-semibold mb-4">Connect With Us</h4>
-                    <!-- Social Media Icons -->
                     <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
                         <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
@@ -433,11 +394,12 @@
         </div>
     </footer>
 
-    <!-- Modals -->
-    <!-- Role Choice Modal -->
     <div id="role-choice-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl text-center">
-            <h2 id="role-choice-title" class="text-2xl font-bold mb-6">Join As...</h2>
+            <div class="flex justify-between items-center mb-6">
+                 <h2 id="role-choice-title" class="text-2xl font-bold">Join As...</h2>
+                <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200">
                 <div class="p-4 flex flex-col items-center">
                     <h3 class="text-lg font-semibold mb-2">A Learner</h3>
@@ -453,7 +415,6 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
     <div id="login-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
             <div class="flex justify-between items-center mb-6">
@@ -477,7 +438,6 @@
         </div>
     </div>
 
-    <!-- Signup Modal -->
     <div id="signup-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[100]">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
             <div class="flex justify-between items-center mb-6">
@@ -510,7 +470,6 @@
         </div>
     </div>
     
-    <!-- Book Session Modal -->
     <div id="book-session-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[101]">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
             <div class="flex justify-between items-center mb-6">
@@ -521,15 +480,31 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Select an available time slot:</label>
                     <div id="time-slots-container" class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-1">
-                        <!-- Time slots will be populated here -->
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Book a Session</button>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Proceed to Payment</button>
             </form>
         </div>
     </div>
 
-    <!-- Message Modal -->
+    <div id="reschedule-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[101]">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
+            <div class="flex justify-between items-center mb-6">
+                 <h2 id="reschedule-session-title" class="text-2xl font-bold">Reschedule Session</h2>
+                <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="reschedule-session-form" novalidate>
+                <p class="mb-4 text-gray-600">Please select a new available time slot. The other party will be asked to confirm the new time.</p>
+                <div id="reschedule-time-slots-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-6 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-lg border">
+                    <p class="col-span-full text-center text-gray-500 py-4">Loading available slots...</p>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50">
+                    Send Reschedule Request
+                </button>
+            </form>
+        </div>
+    </div>
+
     <div id="message-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[101]">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
             <p id="message-text" class="text-lg mb-6"></p>
@@ -537,7 +512,23 @@
         </div>
     </div>
 
-    <!-- Link to your custom JS file -->
+    <div id="payment-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden p-4 z-[102]">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-md text-center">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="payment-title" class="text-2xl font-bold">Complete Payment</h2>
+                <button class="close-modal-btn text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <p class="text-gray-600 mb-4">To confirm your session, please complete the payment by scanning the QR code below with any UPI app.</p>
+            <div id="qr-code-container" class="my-4 flex justify-center">
+                <img id="qr-code-img" src="" alt="UPI QR Code for Payment" class="w-48 h-48 bg-gray-200 rounded-lg">
+            </div>
+            <p class="text-sm text-gray-500 mb-6">Session Price: ₹500 (example)</p>
+            <form id="payment-confirmation-form">
+                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-bold">I Have Paid, Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
     <script src="mentor.js"></script>
 </body>
 </html>

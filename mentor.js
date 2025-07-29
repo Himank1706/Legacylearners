@@ -1,5 +1,4 @@
-
-// script.js
+// mentor.js
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -7,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let userRole = 'learner'; // Default role
     let authAction = ''; // To track if user clicked 'login' or 'signup'
     let allMentors = []; // Will be populated from database
+
+
+    
 
     // --- Element Selectors ---
     const allViews = document.querySelectorAll('main');
@@ -37,7 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const signupModal = document.getElementById('signup-modal');
     const messageModal = document.getElementById('message-modal');
     const bookSessionModal = document.getElementById('book-session-modal');
-    const allModals = [roleChoiceModal, loginModal, signupModal, messageModal, bookSessionModal];
+    // NEW: Add reschedule modal selector (ensure this modal exists in your HTML)
+    const rescheduleModal = document.getElementById('reschedule-modal');
+    const allModals = [roleChoiceModal, loginModal, signupModal, messageModal, bookSessionModal, rescheduleModal];
 
     // Forms
     const loginForm = document.getElementById('login-form');
@@ -45,6 +49,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const profileForm = document.getElementById('profile-form');
     const filterForm = document.getElementById('filter-form');
     const bookSessionForm = document.getElementById('book-session-form');
+    // NEW: Add reschedule form selector
+    const rescheduleSessionForm = document.getElementById('reschedule-session-form');
+
 
     // Nav and Content areas
     const authLinks = document.getElementById('auth-links');
@@ -103,7 +110,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(error.error || 'API call failed');
             }
             
-            return await response.json();
+            // Check for empty response body
+            const text = await response.text();
+            return text ? JSON.parse(text) : {};
         } catch (error) {
             console.error('API Error:', error);
             throw error;
@@ -496,6 +505,34 @@ document.addEventListener('DOMContentLoaded', function() {
             showMessage('Failed to book session: ' + error.message);
         }
     });
+    
+    // NEW: Add submit handler for the reschedule form
+    if (rescheduleSessionForm) {
+        rescheduleSessionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const selectedSlot = rescheduleSessionForm.querySelector('input[name="reschedule-time-slot"]:checked');
+            if (!selectedSlot) {
+                showMessage('Please select a new time slot to reschedule.');
+                return;
+            }
+
+            const sessionId = rescheduleSessionForm.dataset.sessionId;
+            
+            try {
+                await apiCall(`/api/sessions/${sessionId}/reschedule`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ newSlot: selectedSlot.value })
+                });
+
+                closeModal(rescheduleModal);
+                showMessage('Your reschedule request has been sent. The other party will need to confirm the new time.', () => {
+                    renderMySessions();
+                });
+            } catch (error) {
+                showMessage('Failed to reschedule session: ' + error.message);
+            }
+        });
+    }
 
     // --- Find Mentor Page Logic ---
     const showMentorProfile = (mentorId) => {
@@ -581,7 +618,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if(mentor) {
                 document.getElementById('book-session-title').textContent = `Book a Session with ${mentor.name}`;
                 bookSessionForm.dataset.mentorId = mentor.id;
-                populateTimeSlots();
+                // UPDATED: Pass the correct container to the reusable function
+                populateTimeSlots(timeSlotsContainer);
                 openModal(bookSessionModal);
             }
         }
@@ -645,17 +683,25 @@ document.addEventListener('DOMContentLoaded', function() {
         return slots;
     };
 
-    const populateTimeSlots = () => {
+    // UPDATED: Function is now reusable for different modals
+    const populateTimeSlots = (container) => {
         const slots = generateTimeSlots();
-        timeSlotsContainer.innerHTML = '';
+        if (!container) return; // Exit if the container element doesn't exist
+        container.innerHTML = '';
+        
+        // Determine the radio button name based on the container
+        const inputName = container.id.includes('reschedule') ? 'reschedule-time-slot' : 'time-slot';
+
         slots.forEach((slot, index) => {
             const formattedDate = slot.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             const formattedTime = slot.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
             const slotValue = slot.toISOString();
-            timeSlotsContainer.innerHTML += `
+            // Use a unique ID for the label/input pair
+            const slotId = `${inputName}-slot-${index}`;
+            container.innerHTML += `
                 <div>
-                    <input type="radio" name="time-slot" id="slot-${index}" value="${slotValue}" class="hidden peer">
-                    <label for="slot-${index}" class="block text-center p-2 border rounded-lg cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:bg-gray-100">
+                    <input type="radio" name="${inputName}" id="${slotId}" value="${slotValue}" class="hidden peer">
+                    <label for="${slotId}" class="block text-center p-2 border rounded-lg cursor-pointer peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:bg-gray-100">
                         <p class="text-sm font-semibold">${formattedDate}</p>
                         <p class="text-xs">${formattedTime}</p>
                     </label>
@@ -670,30 +716,35 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const sessions = await apiCall(`/api/sessions/${currentUser.user_id || currentUser.id}`);
             const now = new Date();
-
+    
             const upcoming = sessions.filter(s => s.status === 'Confirmed' && new Date(s.slot) > now);
             const pending = sessions.filter(s => s.status === 'Pending');
-            const past = sessions.filter(s => new Date(s.slot) <= now);
-
-            // Render Upcoming
+            const past = sessions.filter(s => new Date(s.slot) <= now || ['Completed', 'Cancelled'].includes(s.status));
+    
+            // Render Upcoming (UPDATED with new buttons)
             if (upcoming.length === 0) {
-                upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions. Time to find a mentor!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
+                upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
             } else {
                 upcomingSessionsContent.innerHTML = upcoming.map(session => {
                     const sessionDate = new Date(session.slot);
                     const formattedDate = sessionDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                     const formattedTime = sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    
+                    const otherPersonName = currentUser.role === 'mentor' ? session.mentee_name : session.mentor_name;
+                    const otherPersonImage = currentUser.role === 'mentor' ? session.mentee_image : session.mentor_image;
+                    const otherPersonInitial = otherPersonName ? encodeURIComponent(otherPersonName.charAt(0)) : 'U';
+
                     return `
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <div class="flex flex-col sm:flex-row gap-6">
-                                <img src="${session.mentor_image || 'https://placehold.co/96x96/a3a3a3/ffffff?text=M'}" alt="${session.mentor_name}" class="w-24 h-24 rounded-full object-cover">
+                                <img src="${otherPersonImage || 'https://placehold.co/96x96/a3a3a3/ffffff?text=' + otherPersonInitial}" alt="${otherPersonName}" class="w-24 h-24 rounded-full object-cover">
                                 <div>
-                                    <h3 class="text-2xl font-bold">Session with ${session.mentor_name}</h3>
+                                    <h3 class="text-2xl font-bold">Session with ${otherPersonName}</h3>
                                     <p class="text-gray-700 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
                                     <div class="mt-4 flex flex-wrap gap-2">
-                                        <button class="card-btn card-btn-primary">Join Call</button>
-                                        <button class="card-btn card-btn-secondary">Reschedule</button>
-                                        <button class="card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
+                                        <a href="${session.meet_link || '#'}" target="_blank" rel="noopener noreferrer" class="card-btn card-btn-primary ${!session.meet_link ? 'opacity-50 cursor-not-allowed' : ''}" title="${!session.meet_link ? 'Link not available yet' : 'Open Google Meet'}">Join Call</a>
+                                        <button data-session-id="${session.id}" data-other-person-name="${otherPersonName}" class="reschedule-btn card-btn card-btn-secondary">Reschedule</button>
+                                        <button data-session-id="${session.id}" class="cancel-btn card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
                                     </div>
                                 </div>
                             </div>
@@ -701,42 +752,84 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                 }).join('');
             }
-
+    
             // Render Pending
             if (pending.length === 0) {
                 pendingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no pending session requests.</p></div>`;
             } else {
                 pendingSessionsContent.innerHTML = pending.map(session => {
-                    return `
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <div class="flex items-center gap-6">
-                                <img src="${session.mentor_image || 'https://placehold.co/96x96/a3a3a3/ffffff?text=M'}" alt="${session.mentor_name}" class="w-24 h-24 rounded-full object-cover">
-                                <div>
-                                    <h3 class="text-xl font-bold">Request sent to ${session.mentor_name}</h3>
-                                    <p class="text-gray-500">Awaiting response for session on ${new Date(session.slot).toLocaleDateString()}</p>
-                                    <button class="mt-2 text-red-500 hover:underline text-sm">Withdraw Request</button>
+                    const sessionDate = new Date(session.slot);
+                    const formattedDate = sessionDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                    const formattedTime = sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                    if (currentUser.role === 'mentor' && currentUser.id === session.mentor_id) {
+                        const menteeNameInitial = session.mentee_name ? encodeURIComponent(session.mentee_name.charAt(0)) : 'L';
+                        return `
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <div class="flex flex-col sm:flex-row items-start gap-6">
+                                    <img src="${session.mentee_image || 'https://placehold.co/96x96/c7d2fe/3730a3?text=' + menteeNameInitial}" alt="${session.mentee_name}" class="w-24 h-24 rounded-full object-cover">
+                                    <div class="flex-grow">
+                                        <h3 class="text-xl font-bold">Request from ${session.mentee_name}</h3>
+                                        <p class="text-gray-600 font-semibold">${formattedDate} at ${formattedTime}</p>
+                                        <div class="mt-4 flex flex-wrap gap-2">
+                                            <button data-session-id="${session.id}" class="approve-request-btn card-btn card-btn-primary">Approve</button>
+                                            <button data-session-id="${session.id}" class="decline-request-btn card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Decline</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        return `
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <div class="flex items-center gap-6">
+                                    <img src="${session.mentor_image || 'https://placehold.co/96x96/a3a3a3/ffffff?text=M'}" alt="${session.mentor_name}" class="w-24 h-24 rounded-full object-cover">
+                                    <div>
+                                        <h3 class="text-xl font-bold">Request sent to ${session.mentor_name}</h3>
+                                        <p class="text-gray-500">Awaiting response for session on ${formattedDate}</p>
+                                        <p class="text-gray-500 text-sm mt-2">You will be notified once the mentor responds.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
                 }).join('');
             }
-
+    
             // Render Past
             if (past.length === 0) {
                 pastSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no past sessions.</p></div>`;
             } else {
                 pastSessionsContent.innerHTML = past.map(session => {
+                    const otherPersonName = currentUser.role === 'mentor' ? session.mentee_name : session.mentor_name;
+                    const otherPersonImage = currentUser.role === 'mentor' ? session.mentee_image : session.mentor_image;
+                    const otherPersonInitial = otherPersonName ? encodeURIComponent(otherPersonName.charAt(0)) : 'U';
+
+                    let statusText = '';
+                    let buttonArea = '';
+                    let containerClass = 'bg-white p-6 rounded-lg shadow-md opacity-75';
+
+                    if (session.status === 'Cancelled') {
+                        statusText = `<p class="text-red-600 font-semibold">Cancelled</p>`;
+                        containerClass = 'bg-red-50 p-6 rounded-lg shadow-md opacity-80';
+                        buttonArea = `<p class="text-sm text-gray-500">This session was cancelled.</p>`;
+                    } else {
+                        statusText = `<p class="text-gray-500">Completed on ${new Date(session.slot).toLocaleDateString()}</p>`;
+                        buttonArea = `
+                            <button class="card-btn card-btn-secondary">Leave a Review</button>
+                            <button class="card-btn card-btn-secondary">Schedule Follow-up</button>
+                        `;
+                    }
+
                     return `
-                        <div class="bg-white p-6 rounded-lg shadow-md opacity-70">
+                        <div class="${containerClass}">
                             <div class="flex items-center gap-6">
-                                <img src="${session.mentor_image || 'https://placehold.co/96x96/a3a3a3/ffffff?text=M'}" alt="${session.mentor_name}" class="w-24 h-24 rounded-full object-cover">
+                                <img src="${otherPersonImage || 'https://placehold.co/96x96/a3a3a3/ffffff?text=' + otherPersonInitial}" alt="${otherPersonName}" class="w-24 h-24 rounded-full object-cover">
                                 <div>
-                                    <h3 class="text-xl font-bold">Session with ${session.mentor_name}</h3>
-                                    <p class="text-gray-500">Completed on ${new Date(session.slot).toLocaleDateString()}</p>
+                                    <h3 class="text-xl font-bold">Session with ${otherPersonName}</h3>
+                                    ${statusText}
                                     <div class="mt-2 flex gap-2">
-                                        <button class="card-btn card-btn-secondary">Leave a Review</button>
-                                        <button class="card-btn card-btn-secondary">Schedule Follow-up</button>
+                                        ${buttonArea}
                                     </div>
                                 </div>
                             </div>
@@ -746,6 +839,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Failed to load sessions:', error);
+            const errorHtml = `<div class="bg-red-100 text-red-700 p-4 rounded-lg">Error loading sessions. Please try again later.</div>`;
+            upcomingSessionsContent.innerHTML = errorHtml;
+            pendingSessionsContent.innerHTML = errorHtml;
+            pastSessionsContent.innerHTML = errorHtml;
         }
     };
     
@@ -766,16 +863,85 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // UPDATED: Event listener now handles approve, decline, reschedule, and cancel
+    sessionsTabContent.addEventListener('click', async (e) => {
+        const approveBtn = e.target.closest('.approve-request-btn');
+        const declineBtn = e.target.closest('.decline-request-btn');
+        const rescheduleBtn = e.target.closest('.reschedule-btn');
+        const cancelBtn = e.target.closest('.cancel-btn');
+    
+        const updateSessionStatus = async (sessionId, status) => {
+            try {
+                await apiCall(`/api/sessions/${sessionId}/status`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status })
+                });
+                showMessage(`Request has been ${status.toLowerCase()}.`, () => {
+                    renderMySessions(); // Refresh the sessions view
+                    if (currentUser.role === 'mentor') renderMentorDashboard(); // Refresh dashboard counts
+                });
+            } catch (error) {
+                showMessage(`Failed to update request: ${error.message}`);
+            }
+        };
+    
+        if (approveBtn) {
+            const sessionId = approveBtn.dataset.sessionId;
+            await updateSessionStatus(sessionId, 'Confirmed');
+        }
+    
+        if (declineBtn) {
+            const sessionId = declineBtn.dataset.sessionId;
+            await updateSessionStatus(sessionId, 'Cancelled');
+        }
+
+        // NEW: Handle cancel button on upcoming sessions
+        if (cancelBtn) {
+            const sessionId = cancelBtn.dataset.sessionId;
+            if (confirm('Are you sure you want to cancel this session? This action cannot be undone.')) {
+                await updateSessionStatus(sessionId, 'Cancelled');
+            }
+        }
+        
+        // NEW: Handle reschedule button click
+        if (rescheduleBtn) {
+            const sessionId = rescheduleBtn.dataset.sessionId;
+            const otherPersonName = rescheduleBtn.dataset.otherPersonName;
+            
+            // Get modal elements
+            const rescheduleSessionTitle = document.getElementById('reschedule-session-title');
+            const rescheduleTimeSlotsContainer = document.getElementById('reschedule-time-slots-container');
+
+            if (rescheduleModal && rescheduleSessionForm && rescheduleSessionTitle && rescheduleTimeSlotsContainer) {
+                // Populate and open the modal
+                rescheduleSessionTitle.textContent = `Reschedule Session with ${otherPersonName}`;
+                rescheduleSessionForm.dataset.sessionId = sessionId;
+                populateTimeSlots(rescheduleTimeSlotsContainer);
+                openModal(rescheduleModal);
+            } else {
+                console.error("Reschedule modal elements not found in the DOM.");
+                showMessage("Could not open reschedule dialog. Please refresh the page.");
+            }
+        }
+    });
+
     const renderMentorDashboard = async () => {
         const firstName = currentUser.name.split(' ')[0];
         mentorDashboardWelcome.textContent = `Welcome to your Dashboard, ${firstName}!`;
         
         try {
             const sessions = await apiCall(`/api/sessions/${currentUser.user_id || currentUser.id}`);
-            const pendingRequests = sessions.filter(s => s.status === 'Pending');
-            viewRequestsBtn.textContent = `View Requests (${pendingRequests.length} New)`;
+            const pendingRequests = sessions.filter(s => s.status === 'Pending' && s.mentor_id === currentUser.id);
+            if (pendingRequests.length > 0) {
+                viewRequestsBtn.textContent = `View Requests (${pendingRequests.length} New)`;
+                viewRequestsBtn.classList.add('animate-pulse');
+            } else {
+                viewRequestsBtn.textContent = `View Requests (0 New)`;
+                viewRequestsBtn.classList.remove('animate-pulse');
+            }
         } catch (error) {
             console.error('Failed to load mentor dashboard data:', error);
+            viewRequestsBtn.textContent = 'View Requests';
         }
     };
 
