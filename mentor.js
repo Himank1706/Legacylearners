@@ -247,6 +247,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         updateProfileCompletion(currentUser);
+        
+        // Initialize profile in view mode
+        if (typeof toggleEditMode === 'function') {
+            toggleEditMode(false);
+        }
     };
 
     const updateUIForLogout = () => {
@@ -430,6 +435,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    let isEditMode = false;
+    
+    const toggleEditMode = (editMode) => {
+        isEditMode = editMode;
+        const submitBtn = profileForm.querySelector('button[type="submit"]');
+        const inputs = profileForm.querySelectorAll('input, textarea, select');
+        const checkboxes = profileForm.querySelectorAll('input[type="checkbox"]');
+        
+        if (editMode) {
+            // Enable editing
+            inputs.forEach(input => input.disabled = false);
+            checkboxes.forEach(cb => cb.disabled = false);
+            submitBtn.textContent = 'Save Changes';
+            submitBtn.style.backgroundColor = '#4f46e5'; // indigo-600
+            submitBtn.disabled = false;
+        } else {
+            // Disable editing
+            inputs.forEach(input => input.disabled = true);
+            checkboxes.forEach(cb => cb.disabled = true);
+            submitBtn.textContent = 'Edit Profile';
+            submitBtn.style.backgroundColor = '#059669'; // green-600
+            submitBtn.disabled = false;
+        }
+    };
+
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!currentUser) {
@@ -437,11 +467,17 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        if (!isEditMode) {
+            // Switch to edit mode
+            toggleEditMode(true);
+            return;
+        }
+
         // Show loading state
         const submitBtn = profileForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Saving...';
         submitBtn.disabled = true;
+        submitBtn.style.backgroundColor = '#9ca3af'; // gray-400
 
         try {
             // Collect data from all fields
@@ -484,12 +520,14 @@ document.addEventListener('DOMContentLoaded', function() {
             Object.assign(currentUser, profileData);
             localStorage.setItem('legacyLearnersCurrentUser', JSON.stringify(currentUser));
             
-            // Update profile completion and show success message
+            // Update profile completion
             updateProfileCompletion(currentUser);
-            showMessage('Profile updated successfully!', () => {
-                // Reload the page to show all updated changes
-                window.location.reload();
-            });
+            
+            // Switch back to view mode
+            toggleEditMode(false);
+            
+            // Show success feedback
+            showMessage('Profile updated successfully!');
 
             // If mentors list is loaded, refresh it to show updated info
             if (allMentors.length > 0) {
@@ -508,10 +546,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Profile update error:', error);
             showMessage('Failed to update profile: ' + error.message);
-        } finally {
-            // Reset button state
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
+            // Keep in edit mode if there was an error
+            toggleEditMode(true);
         }
     });
     

@@ -39,3 +39,22 @@ body {
 .card-btn-icon {
     @apply bg-gray-200 text-gray-600 hover:bg-gray-300 hover:text-indigo-600 p-2 rounded-full;
 }
+
+/* Profile form disabled state styles */
+#profile-form input:disabled,
+#profile-form textarea:disabled,
+#profile-form select:disabled {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+#profile-form input[type="checkbox"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#profile-form label:has(input:disabled) {
+    color: #6b7280;
+}
