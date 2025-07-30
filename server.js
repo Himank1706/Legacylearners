@@ -57,7 +57,7 @@ const initDB = () => {
         )
     `);
 
-    // Sessions table
+    // Sessions table (updated with payment_reference)
     db.exec(`
         CREATE TABLE IF NOT EXISTS sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,7 +65,23 @@ const initDB = () => {
             mentee_id INTEGER NOT NULL,
             slot DATETIME NOT NULL,
             meet_link TEXT,
+            payment_reference TEXT,
             status TEXT NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Confirmed', 'Cancelled', 'Completed')),
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (mentor_id) REFERENCES users (id),
+            FOREIGN KEY (mentee_id) REFERENCES users (id)
+        )
+    `);
+
+    // Payments table
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            reference_id TEXT UNIQUE NOT NULL,
+            mentor_id INTEGER NOT NULL,
+            mentee_id INTEGER NOT NULL,
+            amount DECIMAL(10,2) NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'verified', 'refunded')),
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (mentor_id) REFERENCES users (id),
             FOREIGN KEY (mentee_id) REFERENCES users (id)
@@ -136,43 +152,74 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-// Update user profile (UPDATED to handle all fields)
+// Update user profile (Enhanced with better validation and error handling)
 app.put('/api/profile/:userId', (req, res) => {
     try {
         const { userId } = req.params;
         const profileData = req.body;
 
-        // Update user name in users table
-        if (profileData.name) {
-            db.prepare('UPDATE users SET name = ? WHERE id = ?').run(profileData.name, userId);
+        // Validate user exists
+        const user = db.prepare('SELECT id, role FROM users WHERE id = ?').get(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
 
-        // Dynamically build the SET part of the query for user_profiles table
-        const fieldsToUpdate = [
-            'headline', 'location', 'focus', 'interests', 'guidance', 'goals', 'education', 
-            'skills', 'expectations', 'about', 'industry', 'expertise', 'quote', 'personal_meet_link'
-        ];
-        
-        const setClauses = [];
-        const values = [];
-
-        for (const field of fieldsToUpdate) {
-            if (profileData[field] !== undefined) {
-                setClauses.push(`${field} = ?`);
-                values.push(profileData[field]);
+        // Start a transaction for data consistency
+        const transaction = db.transaction(() => {
+            // Update user name in users table if provided
+            if (profileData.name && profileData.name.trim()) {
+                const nameResult = db.prepare('UPDATE users SET name = ? WHERE id = ?').run(profileData.name.trim(), userId);
+                if (nameResult.changes === 0) {
+                    throw new Error('Failed to update user name');
+                }
             }
-        }
-        
-        if (setClauses.length > 0) {
-            values.push(userId);
-            const sql = `UPDATE user_profiles SET ${setClauses.join(', ')} WHERE user_id = ?`;
-            db.prepare(sql).run(...values);
-        }
 
-        res.json({ message: 'Profile updated successfully' });
+            // Check if user_profiles entry exists, if not create it
+            const profileExists = db.prepare('SELECT user_id FROM user_profiles WHERE user_id = ?').get(userId);
+            if (!profileExists) {
+                db.prepare('INSERT INTO user_profiles (user_id) VALUES (?)').run(userId);
+            }
+
+            // Dynamically build the SET part of the query for user_profiles table
+            const fieldsToUpdate = [
+                'headline', 'location', 'focus', 'interests', 'guidance', 'goals', 'education', 
+                'skills', 'expectations', 'about', 'industry', 'expertise', 'quote', 'personal_meet_link'
+            ];
+            
+            const setClauses = [];
+            const values = [];
+
+            for (const field of fieldsToUpdate) {
+                if (profileData[field] !== undefined) {
+                    setClauses.push(`${field} = ?`);
+                    values.push(profileData[field]);
+                }
+            }
+            
+            if (setClauses.length > 0) {
+                values.push(userId);
+                const sql = `UPDATE user_profiles SET ${setClauses.join(', ')} WHERE user_id = ?`;
+                const profileResult = db.prepare(sql).run(...values);
+                if (profileResult.changes === 0) {
+                    throw new Error('Failed to update profile data');
+                }
+            }
+        });
+
+        // Execute the transaction
+        transaction();
+
+        res.json({ 
+            message: 'Profile updated successfully',
+            updatedFields: Object.keys(profileData).length
+        });
     } catch (error) {
         console.error('Profile update error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        if (error.message.includes('Failed to update')) {
+            res.status(400).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error during profile update' });
+        }
     }
 });
 
@@ -192,14 +239,55 @@ app.get('/api/mentors', (req, res) => {
     }
 });
 
-// Book a session
+// Payment verification endpoint
+app.post('/api/verify-payment', (req, res) => {
+    try {
+        const { reference, amount, mentorId, menteeId } = req.body;
+        
+        // In a real application, you would integrate with actual payment gateway APIs
+        // For demo purposes, we'll simulate payment verification
+        // Accept any reference that's at least 6 characters long
+        const isValid = reference && reference.length >= 6;
+        
+        if (isValid) {
+            // Store payment record
+            db.prepare(`
+                INSERT INTO payments (reference_id, mentor_id, mentee_id, amount, status, created_at) 
+                VALUES (?, ?, ?, ?, 'verified', CURRENT_TIMESTAMP)
+            `).run(reference, mentorId, menteeId, amount);
+            
+            res.json({ verified: true, message: 'Payment verified successfully' });
+        } else {
+            res.json({ verified: false, message: 'Invalid payment reference' });
+        }
+    } catch (error) {
+        console.error('Payment verification error:', error);
+        res.status(500).json({ error: 'Payment verification failed' });
+    }
+});
+
+// Book a session (updated to include payment reference)
 app.post('/api/sessions', (req, res) => {
     try {
-        const { mentorId, menteeId, slot } = req.body;
+        const { mentorId, menteeId, slot, paymentReference } = req.body;
+        
+        // Check if payment was verified
+        if (paymentReference) {
+            const payment = db.prepare(`
+                SELECT * FROM payments 
+                WHERE reference_id = ? AND mentor_id = ? AND mentee_id = ? AND status = 'verified'
+            `).get(paymentReference, mentorId, menteeId);
+            
+            if (!payment) {
+                return res.status(400).json({ error: 'Payment not verified or not found' });
+            }
+        }
+        
         const result = db.prepare(`
-            INSERT INTO sessions (mentor_id, mentee_id, slot, status) 
-            VALUES (?, ?, ?, 'Pending')
-        `).run(mentorId, menteeId, slot);
+            INSERT INTO sessions (mentor_id, mentee_id, slot, payment_reference, status) 
+            VALUES (?, ?, ?, ?, 'Pending')
+        `).run(mentorId, menteeId, slot, paymentReference || null);
+        
         res.status(201).json({ message: 'Session booked successfully', sessionId: result.lastInsertRowid });
     } catch (error) {
         console.error('Book session error:', error);

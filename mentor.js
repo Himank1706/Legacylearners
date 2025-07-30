@@ -432,60 +432,122 @@ document.addEventListener('DOMContentLoaded', function() {
     
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!currentUser) return;
-
-        // Collect data from all fields
-        const profileData = {
-            name: profileName.value,
-            headline: profileHeadline.value,
-            location: profileLocation.value,
-        };
-
-        if (currentUser.role === 'mentor') {
-            Object.assign(profileData, {
-                personal_meet_link: profileMeetLink.value,
-                industry: profileIndustry.value,
-                expertise: profileExpertise.value,
-                about: profileAbout.value,
-                quote: profileQuote.value
-            });
-        } else { // Learner
-            const selectedGuidance = [];
-            profileGuidanceChecklist.querySelectorAll('input:checked').forEach(cb => selectedGuidance.push(cb.value));
-
-            Object.assign(profileData, {
-                focus: profileFocus.value,
-                interests: profileInterests.value,
-                guidance: selectedGuidance.join(', '),
-                goals: profileGoals.value,
-                education: profileEducation.value,
-                skills: profileSkills.value,
-                expectations: profileExpectations.value
-            });
+        if (!currentUser) {
+            showMessage('Please log in to update your profile.');
+            return;
         }
 
+        // Show loading state
+        const submitBtn = profileForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Saving...';
+        submitBtn.disabled = true;
+
         try {
-            await apiCall(`/api/profile/${currentUser.user_id || currentUser.id}`, {
+            // Collect data from all fields
+            const profileData = {
+                name: profileName.value.trim(),
+                headline: profileHeadline.value.trim(),
+                location: profileLocation.value.trim(),
+            };
+
+            if (currentUser.role === 'mentor') {
+                Object.assign(profileData, {
+                    personal_meet_link: profileMeetLink.value.trim(),
+                    industry: profileIndustry.value.trim(),
+                    expertise: profileExpertise.value.trim(),
+                    about: profileAbout.value.trim(),
+                    quote: profileQuote.value.trim()
+                });
+            } else { // Learner
+                const selectedGuidance = [];
+                profileGuidanceChecklist.querySelectorAll('input:checked').forEach(cb => selectedGuidance.push(cb.value));
+
+                Object.assign(profileData, {
+                    focus: profileFocus.value.trim(),
+                    interests: profileInterests.value.trim(),
+                    guidance: selectedGuidance.join(', '),
+                    goals: profileGoals.value.trim(),
+                    education: profileEducation.value.trim(),
+                    skills: profileSkills.value.trim(),
+                    expectations: profileExpectations.value.trim()
+                });
+            }
+
+            // Make API call to update profile
+            const response = await apiCall(`/api/profile/${currentUser.user_id || currentUser.id}`, {
                 method: 'PUT',
                 body: JSON.stringify(profileData)
             });
 
-            // Update current user object locally
+            // Update current user object locally with the new data
             Object.assign(currentUser, profileData);
             localStorage.setItem('legacyLearnersCurrentUser', JSON.stringify(currentUser));
             
-            showMessage('Profile updated successfully!');
+            // Update profile completion and show success message
             updateProfileCompletion(currentUser);
+            showMessage('Profile updated successfully!');
+
+            // If mentors list is loaded, refresh it to show updated info
+            if (allMentors.length > 0) {
+                await loadMentors();
+                // Re-render mentors if we're currently viewing them
+                const findMentorView = document.getElementById('find-mentor-page-content');
+                const guestView = document.getElementById('guest-content');
+                if (!findMentorView.classList.contains('hidden')) {
+                    renderMentors(allMentors, findMentorGrid);
+                }
+                if (!guestView.classList.contains('hidden')) {
+                    renderMentors(allMentors, guestMentorGrid);
+                }
+            }
+
         } catch (error) {
+            console.error('Profile update error:', error);
             showMessage('Failed to update profile: ' + error.message);
+        } finally {
+            // Reset button state
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
         }
     });
     
-    bookSessionForm.addEventListener('submit', async (e) => {
+    // Payment flow elements
+    const paymentModal = document.getElementById('payment-modal');
+    const proceedToPaymentBtn = document.getElementById('proceed-to-payment-btn');
+    const verifyPaymentBtn = document.getElementById('verify-payment-btn');
+    const backToBookingBtn = document.getElementById('back-to-booking-btn');
+    const paymentReference = document.getElementById('payment-reference');
+
+    // Add payment modal to allModals array
+    allModals.push(paymentModal);
+
+    proceedToPaymentBtn.addEventListener('click', (e) => {
         e.preventDefault();
         const selectedSlot = bookSessionForm.querySelector('input[name="time-slot"]:checked');
         if (!selectedSlot) {
             showMessage('Please select a time slot to book.');
+            return;
+        }
+        closeModal(bookSessionModal);
+        openModal(paymentModal);
+    });
+
+    backToBookingBtn.addEventListener('click', () => {
+        closeModal(paymentModal);
+        openModal(bookSessionModal);
+    });
+
+    verifyPaymentBtn.addEventListener('click', async () => {
+        const reference = paymentReference.value.trim();
+        if (!reference) {
+            showMessage('Please enter payment reference/transaction ID.');
+            return;
+        }
+
+        const selectedSlot = bookSessionForm.querySelector('input[name="time-slot"]:checked');
+        if (!selectedSlot) {
+            showMessage('Session slot not found. Please start booking again.');
             return;
         }
 
@@ -493,23 +555,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const mentor = allMentors.find(m => m.id === mentorId);
 
         try {
-            await apiCall('/api/sessions', {
+            // Verify payment first
+            const paymentVerification = await apiCall('/api/verify-payment', {
                 method: 'POST',
                 body: JSON.stringify({
+                    reference: reference,
+                    amount: 500,
                     mentorId: mentor.id,
-                    menteeId: currentUser.user_id || currentUser.id,
-                    slot: selectedSlot.value
+                    menteeId: currentUser.user_id || currentUser.id
                 })
             });
 
-            closeModal(bookSessionModal);
-            showMessage(`Your session request has been sent to ${mentor.name}!`, () => {
-                renderMySessions();
-                showView('sessions-content');
-            });
-            bookSessionForm.reset();
+            if (paymentVerification.verified) {
+                // If payment verified, book the session
+                await apiCall('/api/sessions', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        mentorId: mentor.id,
+                        menteeId: currentUser.user_id || currentUser.id,
+                        slot: selectedSlot.value,
+                        paymentReference: reference
+                    })
+                });
+
+                closeModal(paymentModal);
+                showMessage(`Payment verified! Your session request has been sent to ${mentor.name}!`, () => {
+                    renderMySessions();
+                    showView('sessions-content');
+                });
+                bookSessionForm.reset();
+                paymentReference.value = '';
+            } else {
+                showMessage('Payment verification failed. Please check your transaction ID and try again.');
+            }
         } catch (error) {
-            showMessage('Failed to book session: ' + error.message);
+            showMessage('Failed to verify payment or book session: ' + error.message);
         }
     });
     
@@ -876,8 +956,20 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (declineBtn) {
             await updateSessionStatus(declineBtn.dataset.sessionId, 'Cancelled');
         } else if (cancelBtn) {
-            if (confirm('Are you sure you want to cancel this session?')) {
-                await updateSessionStatus(cancelBtn.dataset.sessionId, 'Cancelled');
+            if (confirm('Are you sure you want to cancel this session? You will receive a refund confirmation message.')) {
+                const sessionId = cancelBtn.dataset.sessionId;
+                try {
+                    await apiCall(`/api/sessions/${sessionId}/status`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ status: 'Cancelled' })
+                    });
+                    showMessage('Session cancelled successfully. We will process your refund within 5-7 business days. You will receive a confirmation email shortly.', () => {
+                        renderMySessions();
+                        if (currentUser.role === 'mentor') renderMentorDashboard();
+                    });
+                } catch (error) {
+                    showMessage(`Failed to cancel session: ${error.message}`);
+                }
             }
         } else if (rescheduleBtn) {
             const sessionId = rescheduleBtn.dataset.sessionId;
