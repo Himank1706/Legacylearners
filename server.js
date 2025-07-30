@@ -115,6 +115,7 @@ app.post('/api/login', async (req, res) => {
     try {
         const { identifier, password, role } = req.body;
         
+        // The p.* will now automatically include the new personal_meet_link column
         const user = db.prepare(`
             SELECT u.*, p.* FROM users u 
             LEFT JOIN user_profiles p ON u.id = p.user_id 
@@ -135,19 +136,19 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-// ⭐️⭐️ UPDATE USER PROFILE (NOW FULLY IMPLEMENTED) ⭐️⭐️
+// Update user profile (UPDATED to handle all fields)
 app.put('/api/profile/:userId', (req, res) => {
     try {
         const { userId } = req.params;
         const profileData = req.body;
 
-        // Update user name in users table if provided
+        // Update user name in users table
         if (profileData.name) {
             db.prepare('UPDATE users SET name = ? WHERE id = ?').run(profileData.name, userId);
         }
 
-        // List of allowed fields in the user_profiles table to prevent SQL injection
-        const allowedProfileFields = [
+        // Dynamically build the SET part of the query for user_profiles table
+        const fieldsToUpdate = [
             'headline', 'location', 'focus', 'interests', 'guidance', 'goals', 'education', 
             'skills', 'expectations', 'about', 'industry', 'expertise', 'quote', 'personal_meet_link'
         ];
@@ -155,20 +156,17 @@ app.put('/api/profile/:userId', (req, res) => {
         const setClauses = [];
         const values = [];
 
-        // Dynamically build the SET part of the query for user_profiles table
-        for (const field of allowedProfileFields) {
+        for (const field of fieldsToUpdate) {
             if (profileData[field] !== undefined) {
                 setClauses.push(`${field} = ?`);
                 values.push(profileData[field]);
             }
         }
         
-        // If there are fields to update in the profile, run the query
         if (setClauses.length > 0) {
-            values.push(userId); // Add the user_id for the WHERE clause
+            values.push(userId);
             const sql = `UPDATE user_profiles SET ${setClauses.join(', ')} WHERE user_id = ?`;
-            const stmt = db.prepare(sql);
-            stmt.run(...values);
+            db.prepare(sql).run(...values);
         }
 
         res.json({ message: 'Profile updated successfully' });
@@ -202,7 +200,7 @@ app.post('/api/sessions', (req, res) => {
             INSERT INTO sessions (mentor_id, mentee_id, slot, status) 
             VALUES (?, ?, ?, 'Pending')
         `).run(mentorId, menteeId, slot);
-        res.status(201).json({ message: 'Session request sent successfully', sessionId: result.lastInsertRowid });
+        res.status(201).json({ message: 'Session booked successfully', sessionId: result.lastInsertRowid });
     } catch (error) {
         console.error('Book session error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -218,7 +216,6 @@ app.get('/api/sessions/:userId', (req, res) => {
             SELECT s.*, 
                    mentor.name as mentor_name, 
                    mentor_profile.image as mentor_image,
-                   mentor_profile.personal_meet_link as meet_link,
                    mentee.name as mentee_name,
                    mentee_profile.image as mentee_image
             FROM sessions s
@@ -237,7 +234,7 @@ app.get('/api/sessions/:userId', (req, res) => {
 });
 
 
-// Update session status (handles mentor's personal link)
+// Update session status (UPDATED to use mentor's personal link)
 app.put('/api/sessions/:sessionId/status', (req, res) => {
     try {
         const { sessionId } = req.params;
@@ -249,14 +246,17 @@ app.put('/api/sessions/:sessionId/status', (req, res) => {
 
         let result;
         if (status === 'Confirmed') {
+            // Find the mentor for this session to get their meeting link
             const session = db.prepare('SELECT mentor_id FROM sessions WHERE id = ?').get(sessionId);
             if (!session) {
                 return res.status(404).json({ error: 'Session not found.' });
             }
             
+            // Get the mentor's personal link from their profile
             const mentorProfile = db.prepare('SELECT personal_meet_link FROM user_profiles WHERE user_id = ?').get(session.mentor_id);
             const meetLink = mentorProfile ? mentorProfile.personal_meet_link : null;
 
+            // Update the session with the status and the retrieved link
             result = db.prepare(`
                 UPDATE sessions 
                 SET status = ?, meet_link = ? 

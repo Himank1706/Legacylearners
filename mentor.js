@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let authAction = ''; // To track if user clicked 'login' or 'signup'
     let allMentors = []; // Will be populated from database
 
-
-    
-
     // --- Element Selectors ---
     const allViews = document.querySelectorAll('main');
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -39,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const signupModal = document.getElementById('signup-modal');
     const messageModal = document.getElementById('message-modal');
     const bookSessionModal = document.getElementById('book-session-modal');
-    // NEW: Add reschedule modal selector (ensure this modal exists in your HTML)
     const rescheduleModal = document.getElementById('reschedule-modal');
     const allModals = [roleChoiceModal, loginModal, signupModal, messageModal, bookSessionModal, rescheduleModal];
 
@@ -49,9 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const profileForm = document.getElementById('profile-form');
     const filterForm = document.getElementById('filter-form');
     const bookSessionForm = document.getElementById('book-session-form');
-    // NEW: Add reschedule form selector
     const rescheduleSessionForm = document.getElementById('reschedule-session-form');
-
 
     // Nav and Content areas
     const authLinks = document.getElementById('auth-links');
@@ -66,9 +60,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Profile Page Elements
     const profileCompletionText = document.getElementById('profile-completion-text');
     const profileCompletionBar = document.getElementById('profile-completion-bar');
+    // Common fields
     const profileName = document.getElementById('profile-name');
     const profileHeadline = document.getElementById('profile-headline');
     const profileLocation = document.getElementById('profile-location');
+    // Role-specific section containers
+    const learnerProfileSection = document.getElementById('learner-profile-section');
+    const mentorProfileSection = document.getElementById('mentor-profile-section');
+    const mentorLinkFieldContainer = document.getElementById('mentor-link-field-container');
+    // Learner fields
     const profileFocus = document.getElementById('profile-focus');
     const profileInterests = document.getElementById('profile-interests');
     const profileGuidanceChecklist = document.getElementById('profile-guidance-checklist');
@@ -76,7 +76,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const profileEducation = document.getElementById('profile-education');
     const profileSkills = document.getElementById('profile-skills');
     const profileExpectations = document.getElementById('profile-expectations');
-    
+    // Mentor fields
+    const profileMeetLink = document.getElementById('profile-meet-link');
+    const profileIndustry = document.getElementById('profile-industry');
+    const profileExpertise = document.getElementById('profile-expertise');
+    const profileAbout = document.getElementById('profile-about');
+    const profileQuote = document.getElementById('profile-quote');
+
     // Find Mentor Page Elements
     const findMentorGrid = document.getElementById('find-mentor-grid');
     const guestMentorGrid = document.getElementById('guest-mentor-grid');
@@ -110,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(error.error || 'API call failed');
             }
             
-            // Check for empty response body
             const text = await response.text();
             return text ? JSON.parse(text) : {};
         } catch (error) {
@@ -122,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadMentors = async () => {
         try {
             allMentors = await apiCall('/api/mentors');
-            // Convert database format to expected format
             allMentors = allMentors.map(mentor => ({
                 id: mentor.id,
                 name: mentor.name,
@@ -150,21 +154,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (viewToShow) {
             viewToShow.classList.remove('hidden');
         }
-        window.scrollTo(0, 0); // Scroll to top on view change
+        window.scrollTo(0, 0);
     };
 
     // --- UI Update & Data Functions ---
     const updateProfileCompletion = (user) => {
-        if (!user || !user.profile) return;
-        const fields = [
-            user.name, user.profile.headline, user.profile.location,
-            user.profile.focus, user.profile.interests, user.profile.goals,
-            user.profile.education, user.profile.skills, user.profile.expectations
-        ];
-        const filledFields = fields.filter(field => {
-            if (Array.isArray(field)) return field.length > 0;
-            return field && String(field).trim().length > 0;
-        }).length;
+        if (!user) return;
+        const fields = [ user.name, user.headline, user.location ];
+        if(user.role === 'learner') {
+            fields.push(user.focus, user.interests, user.goals, user.education, user.skills, user.expectations);
+        } else {
+            fields.push(user.industry, user.expertise, user.about, user.personal_meet_link);
+        }
+
+        const filledFields = fields.filter(field => field && String(field).trim().length > 0).length;
         const percentage = Math.round((filledFields / fields.length) * 100);
         
         profileCompletionText.textContent = `${percentage}%`;
@@ -199,44 +202,51 @@ document.addEventListener('DOMContentLoaded', function() {
         mobileUserInfo.classList.remove('hidden');
         mobileWelcomeMessage.textContent = `Hi, ${firstName}!`;
 
-        if (user.role === 'mentor') {
-            renderMentorDashboard();
-            showView('mentor-dashboard-content');
-        } else {
-            dashboardWelcome.textContent = `Welcome to your Dashboard, ${firstName}!`;
-            showView('dashboard-content');
-        }
-        
-        // Populate profile fields
+        // Populate common profile fields first
         profileName.value = user.name || '';
         profileHeadline.value = user.headline || '';
         profileLocation.value = user.location || '';
-        profileFocus.value = user.focus || '';
-        profileInterests.value = user.interests || '';
-        profileGoals.value = user.goals || '';
-        profileEducation.value = user.education || '';
-        profileSkills.value = user.skills || '';
-        profileExpectations.value = user.expectations || '';
         
-        const guidanceArray = user.guidance ? user.guidance.split(',').map(g => g.trim()) : [];
-        const guidanceCheckboxes = profileGuidanceChecklist.querySelectorAll('input[type="checkbox"]');
-        guidanceCheckboxes.forEach(checkbox => {
-            checkbox.checked = guidanceArray.includes(checkbox.value);
-        });
-        
-        // Create profile object for completion calculation
-        user.profile = {
-            headline: user.headline,
-            location: user.location,
-            focus: user.focus,
-            interests: user.interests ? user.interests.split(',').map(i => i.trim()) : [],
-            goals: user.goals,
-            education: user.education,
-            skills: user.skills ? user.skills.split(',').map(s => s.trim()) : [],
-            expectations: user.expectations
-        };
-        
-        updateProfileCompletion(user);
+        if (user.role === 'mentor') {
+            renderMentorDashboard();
+            showView('mentor-dashboard-content');
+            
+            // Toggle visibility of profile sections
+            mentorLinkFieldContainer.classList.remove('hidden');
+            mentorProfileSection.classList.remove('hidden');
+            learnerProfileSection.classList.add('hidden');
+
+            // Populate mentor-specific fields
+            profileMeetLink.value = user.personal_meet_link || '';
+            profileIndustry.value = user.industry || '';
+            profileExpertise.value = user.expertise || '';
+            profileAbout.value = user.about || '';
+            profileQuote.value = user.quote || '';
+
+        } else { // Learner
+            dashboardWelcome.textContent = `Welcome to your Dashboard, ${firstName}!`;
+            showView('dashboard-content');
+
+            // Toggle visibility of profile sections
+            mentorLinkFieldContainer.classList.add('hidden');
+            mentorProfileSection.classList.add('hidden');
+            learnerProfileSection.classList.remove('hidden');
+
+            // Populate learner-specific fields
+            profileFocus.value = user.focus || '';
+            profileInterests.value = user.interests || '';
+            profileGoals.value = user.goals || '';
+            profileEducation.value = user.education || '';
+            profileSkills.value = user.skills || '';
+            profileExpectations.value = user.expectations || '';
+            
+            const guidanceArray = user.guidance ? user.guidance.split(',').map(g => g.trim()) : [];
+            const guidanceCheckboxes = profileGuidanceChecklist.querySelectorAll('input[type="checkbox"]');
+            guidanceCheckboxes.forEach(checkbox => {
+                checkbox.checked = guidanceArray.includes(checkbox.value);
+            });
+        }
+        updateProfileCompletion(currentUser);
     };
 
     const updateUIForLogout = () => {
@@ -319,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    const handleLogout = (e) => { e.preventDefault(); updateUIForLogout(); showMessage('You have been logged out.'); };
+    const handleLogout = (e) => { e.preventDefault(); updateUIForLogout(); };
     [logoutBtn, mobileLogoutBtn].forEach(btn => btn.addEventListener('click', handleLogout));
 
     forgotPasswordLink.addEventListener('click', (e) => {
@@ -373,24 +383,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showView('sessions-content');
     });
 
-    // --- Real-time Profile Completion Update ---
-    const handleProfileFormChange = () => {
-        const tempUser = {
-            name: profileName.value,
-            profile: {
-                headline: profileHeadline.value, location: profileLocation.value,
-                focus: profileFocus.value, interests: profileInterests.value.split(',').map(s => s.trim()).filter(Boolean),
-                goals: profileGoals.value, education: profileEducation.value,
-                skills: profileSkills.value.split(',').map(s => s.trim()).filter(Boolean),
-                expectations: profileExpectations.value
-            }
-        };
-        updateProfileCompletion(tempUser);
-    };
-
-    profileForm.addEventListener('input', handleProfileFormChange);
-    profileForm.addEventListener('change', handleProfileFormChange);
-
     // --- Form Submission Logic ---
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -442,21 +434,35 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         if (!currentUser) return;
 
-        const selectedGuidance = [];
-        profileGuidanceChecklist.querySelectorAll('input:checked').forEach(cb => selectedGuidance.push(cb.value));
-
+        // Collect data from all fields
         const profileData = {
             name: profileName.value,
             headline: profileHeadline.value,
             location: profileLocation.value,
-            focus: profileFocus.value,
-            interests: profileInterests.value,
-            guidance: selectedGuidance.join(', '),
-            goals: profileGoals.value,
-            education: profileEducation.value,
-            skills: profileSkills.value,
-            expectations: profileExpectations.value
         };
+
+        if (currentUser.role === 'mentor') {
+            Object.assign(profileData, {
+                personal_meet_link: profileMeetLink.value,
+                industry: profileIndustry.value,
+                expertise: profileExpertise.value,
+                about: profileAbout.value,
+                quote: profileQuote.value
+            });
+        } else { // Learner
+            const selectedGuidance = [];
+            profileGuidanceChecklist.querySelectorAll('input:checked').forEach(cb => selectedGuidance.push(cb.value));
+
+            Object.assign(profileData, {
+                focus: profileFocus.value,
+                interests: profileInterests.value,
+                guidance: selectedGuidance.join(', '),
+                goals: profileGoals.value,
+                education: profileEducation.value,
+                skills: profileSkills.value,
+                expectations: profileExpectations.value
+            });
+        }
 
         try {
             await apiCall(`/api/profile/${currentUser.user_id || currentUser.id}`, {
@@ -464,11 +470,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(profileData)
             });
 
-            // Update current user object
+            // Update current user object locally
             Object.assign(currentUser, profileData);
             localStorage.setItem('legacyLearnersCurrentUser', JSON.stringify(currentUser));
             
             showMessage('Profile updated successfully!');
+            updateProfileCompletion(currentUser);
         } catch (error) {
             showMessage('Failed to update profile: ' + error.message);
         }
@@ -496,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             closeModal(bookSessionModal);
-            showMessage(`Your session request has been sent to ${mentor.name}! For more details and updates, go to 'My Sessions' on your dashboard.`, () => {
+            showMessage(`Your session request has been sent to ${mentor.name}!`, () => {
                 renderMySessions();
                 showView('sessions-content');
             });
@@ -506,7 +513,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // NEW: Add submit handler for the reschedule form
     if (rescheduleSessionForm) {
         rescheduleSessionForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -525,7 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 closeModal(rescheduleModal);
-                showMessage('Your reschedule request has been sent. The other party will need to confirm the new time.', () => {
+                showMessage('Your reschedule request has been sent.', () => {
                     renderMySessions();
                 });
             } catch (error) {
@@ -592,9 +598,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="flex items-center justify-between gap-2">
                         <button data-mentor-id="${mentor.id}" class="view-profile-btn card-btn card-btn-primary flex-1">View Profile</button>
-                        <button class="card-btn-icon" title="Save Mentor">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                        </button>
                     </div>
                 </div>
             `;
@@ -618,7 +621,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if(mentor) {
                 document.getElementById('book-session-title').textContent = `Book a Session with ${mentor.name}`;
                 bookSessionForm.dataset.mentorId = mentor.id;
-                // UPDATED: Pass the correct container to the reusable function
                 populateTimeSlots(timeSlotsContainer);
                 openModal(bookSessionModal);
             }
@@ -652,8 +654,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const populateFilters = () => {
-        const industries = [...new Set(allMentors.map(m => m.industry))];
-        const expertise = [...new Set(allMentors.flatMap(m => m.expertise))];
+        const industries = [...new Set(allMentors.map(m => m.industry).filter(Boolean))];
+        const expertise = [...new Set(allMentors.flatMap(m => m.expertise).filter(Boolean))];
 
         industryFilters.innerHTML = industries.map(industry => `
             <label class="flex items-center space-x-2"><input type="checkbox" value="${industry}" class="form-checkbox h-4 w-4 text-indigo-600 rounded"><span>${industry}</span></label>
@@ -671,9 +673,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const generateTimeSlots = () => {
         const slots = [];
         const now = new Date();
-        for (let i = 1; i < 8; i++) { // Generate for the next 7 days
-            const day = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
-            if (day.getDay() > 0 && day.getDay() < 6) { // Monday to Friday
+        // Updated to use current date, July 30, 2025
+        const today = new Date('2025-07-30T00:00:00');
+        for (let i = 1; i < 8; i++) { // Next 7 days
+            const day = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+            if (day.getDay() > 0 && day.getDay() < 6) { // Mon-Fri
                 for (let hour = 10; hour <= 16; hour++) { // 10 AM to 4 PM
                     slots.push(new Date(day.setHours(hour, 0, 0, 0)));
                     slots.push(new Date(day.setHours(hour, 30, 0, 0)));
@@ -683,20 +687,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return slots;
     };
 
-    // UPDATED: Function is now reusable for different modals
     const populateTimeSlots = (container) => {
         const slots = generateTimeSlots();
-        if (!container) return; // Exit if the container element doesn't exist
+        if (!container) return; 
         container.innerHTML = '';
         
-        // Determine the radio button name based on the container
         const inputName = container.id.includes('reschedule') ? 'reschedule-time-slot' : 'time-slot';
 
         slots.forEach((slot, index) => {
             const formattedDate = slot.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             const formattedTime = slot.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
             const slotValue = slot.toISOString();
-            // Use a unique ID for the label/input pair
             const slotId = `${inputName}-slot-${index}`;
             container.innerHTML += `
                 <div>
@@ -721,7 +722,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const pending = sessions.filter(s => s.status === 'Pending');
             const past = sessions.filter(s => new Date(s.slot) <= now || ['Completed', 'Cancelled'].includes(s.status));
     
-            // Render Upcoming (UPDATED with new buttons)
             if (upcoming.length === 0) {
                 upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
             } else {
@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <h3 class="text-2xl font-bold">Session with ${otherPersonName}</h3>
                                     <p class="text-gray-700 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
                                     <div class="mt-4 flex flex-wrap gap-2">
-                                        <a href="${session.meet_link || '#'}" target="_blank" rel="noopener noreferrer" class="card-btn card-btn-primary ${!session.meet_link ? 'opacity-50 cursor-not-allowed' : ''}" title="${!session.meet_link ? 'Link not available yet' : 'Open Google Meet'}">Join Call</a>
+                                        <a href="${session.meet_link || '#'}" target="_blank" rel="noopener noreferrer" class="card-btn card-btn-primary ${!session.meet_link ? 'opacity-50 cursor-not-allowed' : ''}" title="${!session.meet_link ? 'Link not available. Mentor may need to set it on their profile.' : 'Open Google Meet'}">Join Call</a>
                                         <button data-session-id="${session.id}" data-other-person-name="${otherPersonName}" class="reschedule-btn card-btn card-btn-secondary">Reschedule</button>
                                         <button data-session-id="${session.id}" class="cancel-btn card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
                                     </div>
@@ -753,7 +753,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }).join('');
             }
     
-            // Render Pending
             if (pending.length === 0) {
                 pendingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no pending session requests.</p></div>`;
             } else {
@@ -787,7 +786,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div>
                                         <h3 class="text-xl font-bold">Request sent to ${session.mentor_name}</h3>
                                         <p class="text-gray-500">Awaiting response for session on ${formattedDate}</p>
-                                        <p class="text-gray-500 text-sm mt-2">You will be notified once the mentor responds.</p>
                                     </div>
                                 </div>
                             </div>
@@ -796,7 +794,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }).join('');
             }
     
-            // Render Past
             if (past.length === 0) {
                 pastSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no past sessions.</p></div>`;
             } else {
@@ -805,20 +802,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     const otherPersonImage = currentUser.role === 'mentor' ? session.mentee_image : session.mentor_image;
                     const otherPersonInitial = otherPersonName ? encodeURIComponent(otherPersonName.charAt(0)) : 'U';
 
-                    let statusText = '';
-                    let buttonArea = '';
-                    let containerClass = 'bg-white p-6 rounded-lg shadow-md opacity-75';
-
+                    let statusText, buttonArea, containerClass = 'bg-white p-6 rounded-lg shadow-md opacity-75';
                     if (session.status === 'Cancelled') {
                         statusText = `<p class="text-red-600 font-semibold">Cancelled</p>`;
                         containerClass = 'bg-red-50 p-6 rounded-lg shadow-md opacity-80';
                         buttonArea = `<p class="text-sm text-gray-500">This session was cancelled.</p>`;
                     } else {
                         statusText = `<p class="text-gray-500">Completed on ${new Date(session.slot).toLocaleDateString()}</p>`;
-                        buttonArea = `
-                            <button class="card-btn card-btn-secondary">Leave a Review</button>
-                            <button class="card-btn card-btn-secondary">Schedule Follow-up</button>
-                        `;
+                        buttonArea = `<button class="card-btn card-btn-secondary">Leave a Review</button>`;
                     }
 
                     return `
@@ -828,9 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div>
                                     <h3 class="text-xl font-bold">Session with ${otherPersonName}</h3>
                                     ${statusText}
-                                    <div class="mt-2 flex gap-2">
-                                        ${buttonArea}
-                                    </div>
+                                    <div class="mt-2 flex gap-2">${buttonArea}</div>
                                 </div>
                             </div>
                         </div>
@@ -839,7 +828,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Failed to load sessions:', error);
-            const errorHtml = `<div class="bg-red-100 text-red-700 p-4 rounded-lg">Error loading sessions. Please try again later.</div>`;
+            const errorHtml = `<div class="bg-red-100 text-red-700 p-4 rounded-lg">Error loading sessions.</div>`;
             upcomingSessionsContent.innerHTML = errorHtml;
             pendingSessionsContent.innerHTML = errorHtml;
             pastSessionsContent.innerHTML = errorHtml;
@@ -856,14 +845,11 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.classList.add('border-indigo-500', 'text-indigo-600');
             e.target.classList.remove('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300');
             
-            sessionsTabContent.querySelectorAll('[role="tabpanel"]').forEach(panel => {
-                panel.classList.add('hidden');
-            });
+            sessionsTabContent.querySelectorAll('[role="tabpanel"]').forEach(panel => panel.classList.add('hidden'));
             document.getElementById(`${tab}-sessions-content`).classList.remove('hidden');
         }
     });
 
-    // UPDATED: Event listener now handles approve, decline, reschedule, and cancel
     sessionsTabContent.addEventListener('click', async (e) => {
         const approveBtn = e.target.closest('.approve-request-btn');
         const declineBtn = e.target.closest('.decline-request-btn');
@@ -877,8 +863,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify({ status })
                 });
                 showMessage(`Request has been ${status.toLowerCase()}.`, () => {
-                    renderMySessions(); // Refresh the sessions view
-                    if (currentUser.role === 'mentor') renderMentorDashboard(); // Refresh dashboard counts
+                    renderMySessions();
+                    if (currentUser.role === 'mentor') renderMentorDashboard();
                 });
             } catch (error) {
                 showMessage(`Failed to update request: ${error.message}`);
@@ -886,41 +872,24 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     
         if (approveBtn) {
-            const sessionId = approveBtn.dataset.sessionId;
-            await updateSessionStatus(sessionId, 'Confirmed');
-        }
-    
-        if (declineBtn) {
-            const sessionId = declineBtn.dataset.sessionId;
-            await updateSessionStatus(sessionId, 'Cancelled');
-        }
-
-        // NEW: Handle cancel button on upcoming sessions
-        if (cancelBtn) {
-            const sessionId = cancelBtn.dataset.sessionId;
-            if (confirm('Are you sure you want to cancel this session? This action cannot be undone.')) {
-                await updateSessionStatus(sessionId, 'Cancelled');
+            await updateSessionStatus(approveBtn.dataset.sessionId, 'Confirmed');
+        } else if (declineBtn) {
+            await updateSessionStatus(declineBtn.dataset.sessionId, 'Cancelled');
+        } else if (cancelBtn) {
+            if (confirm('Are you sure you want to cancel this session?')) {
+                await updateSessionStatus(cancelBtn.dataset.sessionId, 'Cancelled');
             }
-        }
-        
-        // NEW: Handle reschedule button click
-        if (rescheduleBtn) {
+        } else if (rescheduleBtn) {
             const sessionId = rescheduleBtn.dataset.sessionId;
             const otherPersonName = rescheduleBtn.dataset.otherPersonName;
-            
-            // Get modal elements
             const rescheduleSessionTitle = document.getElementById('reschedule-session-title');
             const rescheduleTimeSlotsContainer = document.getElementById('reschedule-time-slots-container');
 
             if (rescheduleModal && rescheduleSessionForm && rescheduleSessionTitle && rescheduleTimeSlotsContainer) {
-                // Populate and open the modal
                 rescheduleSessionTitle.textContent = `Reschedule Session with ${otherPersonName}`;
                 rescheduleSessionForm.dataset.sessionId = sessionId;
                 populateTimeSlots(rescheduleTimeSlotsContainer);
                 openModal(rescheduleModal);
-            } else {
-                console.error("Reschedule modal elements not found in the DOM.");
-                showMessage("Could not open reschedule dialog. Please refresh the page.");
             }
         }
     });
