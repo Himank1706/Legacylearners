@@ -304,6 +304,7 @@ app.get('/api/sessions/:userId', (req, res) => {
             SELECT s.*, 
                    mentor.name as mentor_name, 
                    mentor_profile.image as mentor_image,
+                   mentor_profile.personal_meet_link,
                    mentee.name as mentee_name,
                    mentee_profile.image as mentee_image
             FROM sessions s
@@ -389,6 +390,29 @@ app.put('/api/sessions/:sessionId/reschedule', (req, res) => {
         res.json({ message: 'Session reschedule request sent successfully.' });
     } catch (error) {
         console.error('Reschedule session error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update session meeting link
+app.put('/api/sessions/:sessionId/link', (req, res) => {
+    try {
+        const { sessionId } = req.params;
+        const { meetLink } = req.body;
+        
+        const result = db.prepare(`
+            UPDATE sessions 
+            SET meet_link = ? 
+            WHERE id = ?
+        `).run(meetLink || null, sessionId);
+        
+        if (result.changes === 0) {
+            return res.status(404).json({ error: 'Session not found.' });
+        }
+        
+        res.json({ message: 'Meeting link updated successfully.' });
+    } catch (error) {
+        console.error('Update session link error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

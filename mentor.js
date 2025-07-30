@@ -486,7 +486,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update profile completion and show success message
             updateProfileCompletion(currentUser);
-            showMessage('Profile updated successfully!');
+            showMessage('Profile updated successfully!', () => {
+                // Reload the page to show all updated changes
+                window.location.reload();
+            });
 
             // If mentors list is loaded, refresh it to show updated info
             if (allMentors.length > 0) {
@@ -803,7 +806,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const past = sessions.filter(s => new Date(s.slot) <= now || ['Completed', 'Cancelled'].includes(s.status));
     
             if (upcoming.length === 0) {
-                upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary">Find a Mentor</button></div>`;
+                upcomingSessionsContent.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md text-center"><p class="text-gray-600">You have no upcoming sessions!</p><button id="find-mentor-shortcut" class="mt-4 card-btn card-btn-primary"> </button></div>`;
             } else {
                 upcomingSessionsContent.innerHTML = upcoming.map(session => {
                     const sessionDate = new Date(session.slot);
@@ -814,16 +817,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     const otherPersonImage = currentUser.role === 'mentor' ? session.mentee_image : session.mentor_image;
                     const otherPersonInitial = otherPersonName ? encodeURIComponent(otherPersonName.charAt(0)) : 'U';
 
+                    // Use session-specific meet_link or mentor's personal_meet_link as fallback
+                    let meetingLink = session.meet_link || session.personal_meet_link;
+                    let linkAvailable = meetingLink && meetingLink.trim() !== '';
+
                     return `
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <div class="flex flex-col sm:flex-row gap-6">
                                 <img src="${otherPersonImage || 'https://placehold.co/96x96/a3a3a3/ffffff?text=' + otherPersonInitial}" alt="${otherPersonName}" class="w-24 h-24 rounded-full object-cover">
-                                <div>
+                                <div class="flex-grow">
                                     <h3 class="text-2xl font-bold">Session with ${otherPersonName}</h3>
                                     <p class="text-gray-700 mt-2 font-semibold">${formattedDate} at ${formattedTime}</p>
                                     <div class="mt-4 flex flex-wrap gap-2">
-                                        <a href="${session.meet_link || '#'}" target="_blank" rel="noopener noreferrer" class="card-btn card-btn-primary ${!session.meet_link ? 'opacity-50 cursor-not-allowed' : ''}" title="${!session.meet_link ? 'Link not available. Mentor may need to set it on their profile.' : 'Open Google Meet'}">Join Call</a>
+                                        <a href="${linkAvailable ? meetingLink : '#'}" target="_blank" rel="noopener noreferrer" class="card-btn card-btn-primary ${!linkAvailable ? 'opacity-50 cursor-not-allowed' : ''}" title="${!linkAvailable ? 'Meeting link not available. Please add a link or ask mentor to update their profile.' : 'Join Meeting'}">Join Call</a>
                                         <button data-session-id="${session.id}" data-other-person-name="${otherPersonName}" class="reschedule-btn card-btn card-btn-secondary">Reschedule</button>
+                                        <button data-session-id="${session.id}" data-other-person-name="${otherPersonName}" class="edit-link-btn card-btn card-btn-secondary">Edit Link</button>
                                         <button data-session-id="${session.id}" class="cancel-btn card-btn card-btn-secondary !bg-red-100 !text-red-700 hover:!bg-red-200">Cancel</button>
                                     </div>
                                 </div>
@@ -982,6 +990,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 rescheduleSessionForm.dataset.sessionId = sessionId;
                 populateTimeSlots(rescheduleTimeSlotsContainer);
                 openModal(rescheduleModal);
+            }
+        }
+
+        const editLinkBtn = e.target.closest('.edit-link-btn');
+        if (editLinkBtn) {
+            const sessionId = editLinkBtn.dataset.sessionId;
+            const otherPersonName = editLinkBtn.dataset.otherPersonName;
+            const newLink = prompt(`Enter meeting link for session with ${otherPersonName}:`, '');
+            
+            if (newLink !== null) {
+                try {
+                    await apiCall(`/api/sessions/${sessionId}/link`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ meetLink: newLink.trim() })
+                    });
+                    showMessage('Meeting link updated successfully!', () => {
+                        renderMySessions();
+                    });
+                } catch (error) {
+                    showMessage('Failed to update meeting link: ' + error.message);
+                }
             }
         }
     });
